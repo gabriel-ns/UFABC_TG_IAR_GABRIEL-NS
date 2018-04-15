@@ -1,0 +1,60 @@
+\documentclass[12pt,a4paper,draft]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}  
+
+\usepackage[left=3.00cm, right=3.00cm, top=3.00cm, bottom=2.00cm]{geometry}
+\usepackage{cite}
+\usepackage[brazil]{babel}
+	
+\usepackage{indentfirst}
+\usepackage{tabularx,ragged2e,booktabs,caption}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\makeatletter
+\newcommand\subsubsubsection{\@startsection{paragraph}{4}{\z@}%
+            {-2.5ex\@plus -1ex \@minus -.25ex}%
+            {1.25ex \@plus .25ex}%
+            {\normalfont\normalsize\bfseries}}
+\makeatother
+\setcounter{secnumdepth}{4} % how many sectioning levels to assign numbers to
+\setcounter{tocdepth}{4}    % how many sectioning levels to show in ToC
+
+\newcommand{\institution}{UNIVERSIDADE FEDERAL DO ABC}
+\newcommand{\course}{ENGENHARIA DE INSTRUMENTAÇÃO, AUTOMAÇÃO E ROBÓTICA}
+\newcommand{\local}{SANTO ANDRÉ}
+\newcommand{\theauthor}{GABRIEL NASCIMENTO DOS SANTOS}
+\newcommand{\thetitle}{BLUETOOTH LOW ENERGY}
+\newcommand{\thedate}{2018}
+
+
+\begin{document}
+	
+	\include{src/capa}
+	
+	\include{src/rosto}
+	
+	\include{src/resumo}
+	
+	\tableofcontents
+	
+	teste\cite{MicrochipLPDesign}
+
+	\include{src/introducao}
+	
+	\include{src/objetivos}
+	
+	\include{src/desenvolvimento}
+	
+	\include{src/resultados}
+	
+	\bibliographystyle{ieeetr}
+	
+	\bibliography{references}
+	
+\end{document}
