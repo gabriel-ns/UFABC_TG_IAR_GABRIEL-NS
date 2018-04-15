@@ -50,3 +50,14 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#Latex generated files
+*.bbl
+*.xml
+*.bcf
+*.blg
+*.gz
+*.aux
+*.toc
+*.log
+*.pdf
