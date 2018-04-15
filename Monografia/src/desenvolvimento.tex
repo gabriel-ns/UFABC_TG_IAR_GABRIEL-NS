@@ -2,42 +2,66 @@
 
 \subsection{Projeto}
 
-O projeto desenvolvido tem como funcionalidade principal a coleta de leituras periódicas de sensores com a transmissão sem fio das variáveis medidas utilizando o bluetooth low energy. Estes dados, quando recebidos, são enviados para a internet.
+O projeto desenvolvido tem como funcionalidade principal a coleta de leituras
+periódicas de sensores com a transmissão sem fio das variáveis medidas
+utilizando o bluetooth low energy. Estes dados, quando recebidos, são enviados
+para a internet.
 
-Para tal, dividiu-se as tarefas em três sistemas diferentes: a estação de medidas, responsável pela coleta e transmissão das medididas através do bluetooth, o gateway BLE-Internet, responsável por captar os dados no ar e enviá-los para a internet, e a infraestrutura online, que recebe a informação e a armazena on-line.
+Para tal, dividiu-se as tarefas em três sistemas diferentes: a estação de
+medidas, responsável pela coleta e transmissão das medididas através do
+bluetooth, o gateway BLE-Internet, responsável por captar os dados no ar e
+enviá-los para a internet, e a infraestrutura online, que recebe a informação e
+a armazena on-line.
 
 \subsubsection{Estação de Medidas Bluetooth Low Energy}
 
-A estação de medidas foi projetada para atender os requisitos propostos, visando o mínimo consumo energético para possibilitar a alimentação através de baterias sem a necessidade de manutenções frequentes.
+A estação de medidas foi projetada para atender os requisitos propostos,
+visando o mínimo consumo energético para possibilitar a alimentação através de
+baterias sem a necessidade de manutenções frequentes.
+ 
+Como diferencial a estação permite a configuração de sua operação através de
+serviços GATT do BLE, sendo possível alterar tanto as configurações de rádio
+(potêcia e intervalo de transmissão) quanto os parâmetros de configuração dos
+sensores (range, escala, intervalo entre medidas).
 
-Como diferencial a estação permite a configuração de sua operação através de serviços GATT do BLE, sendo possível alterar tanto as configurações de rádio (potêcia e intervalo de transmissão) quanto os parâmetros de configuração dos sensores (range, escala, intervalo entre medidas).
-
-O hardware selecionado para a estação de medidas é o SoC nRF51822, produzido pela Nordic Semiconductor. Este SoC conta com um processador ARM Cortex M0 de 32 bits e com um transceiver de 2.4GHz multiprotocolo, sendo capaz de operar com os protocolos Bluetooth e ANT.\cite{nRF51ProdSpec}
+O hardware selecionado para a estação de medidas é o SoC nRF51822, produzido
+pela Nordic Semiconductor. Este SoC conta com um processador ARM Cortex M0 de 32
+bits e com um transceiver de 2.4GHz multiprotocolo, sendo capaz de operar com
+os protocolos Bluetooth e ANT.\cite{nRF51ProdSpec}
 
 \subsubsubsection{Estratégia para otimização de consumo energético}
-Com a finalidade de otimizar o consumo energético foi adotada a estratégia de manter o microcontrolador em modo deep sleep sempre que possível, sendo o mesmo acordado somente através de interrupções para a realização das tarefas de rádio e de leitura de sensores. Durante os períodos em sleep todos os sensores devem estar num estado de baixo consumo de energia.
+Com a finalidade de otimizar o consumo energético foi adotada a estratégia de
+manter o microcontrolador em modo deep sleep sempre que possível, sendo o mesmo
+acordado somente através de interrupções para a realização das tarefas de rádio
+e de leitura de sensores. Durante os períodos em sleep todos os sensores devem
+estar num estado de baixo consumo de energia.
 
-Ainda na otimização do consumo, a estratégia adotada para a transmissão dos dados dos sensores foi concepção do dispositivo operando como um BLE advertiser pois desta forma se reduz o período no qual há a necessidade do rádio, e somente durante a configuração o dispositivo opera como um BLE Slave, permitindo que uma conexão seja estabelecida e que os serviços e características presentes sejam acessíveis.
+Ainda na otimização do consumo, a estratégia adotada para a transmissão dos
+dados dos sensores foi concepção do dispositivo operando como um BLE advertiser
+pois desta forma se reduz o período no qual há a necessidade do rádio, e
+somente durante a configuração o dispositivo opera como um BLE Slave,
+permitindo que uma conexão seja estabelecida e que os serviços e
+características presentes sejam acessíveis.
 
 \subsubsubsection{Bluetooth Advertiser}
-No modo advertiser, o dispositivo transmite a informação de que este aceita o estabelecimento de conexões com centrais BLE. Além disso, estão presentes nos pacotes transmitidos as leituras realizadas pelos sensores.
+No modo advertiser, o dispositivo transmite a informação de que este aceita o
+estabelecimento de conexões com centrais BLE. Além disso, estão presentes nos
+pacotes transmitidos as leituras realizadas pelos sensores.
 
-As informações dos sensores são codificadas como payload do pacote seguindo a seguinte estrutura de dados [ESTRUTURA]. Como formato de payload, optou-se por utilizar o Manufacturer Specific Data, evitando assim possíveis conflitos com pacotes BLE definidos pela especificação.
+As informações dos sensores são codificadas como payload do pacote seguindo a
+seguinte estrutura de dados [ESTRUTURA]. Como formato de payload, optou-se por
+utilizar o Manufacturer Specific Data, evitando assim possíveis conflitos com
+pacotes BLE definidos pela especificação.
 
-\begin{lstlisting}[frame=single]
-typedef struct __attribute__((packed)) ble_adv_data
-{
-    uint32_t pressure;
-    int16_t  temperature;
-    uint16_t humidity;
-    uint32_t visible_lux;
-    uint32_t infrared_lux;
-}ble_adv_data_t
-\end{lstlisting}
-Os pacotes MSD são definidos na especificação suplementar, sendo o data type definido como  
+\lstinputlisting{../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_frame.h}
+
+Os pacotes MSD são definidos na especificação suplementar, sendo o data type
+definido como  
 
 -> Utilização do msd
-A transmissão dos pacotes de advertising são feitos através do formato de Manufacturer Specific Data, desta garante-se a compatibilidade dos pacotes transmitidos por este dispositivo com a especificação sem causar erro
+A transmissão dos pacotes de advertising são feitos através do formato de
+Manufacturer Specific Data, desta garante-se a compatibilidade dos pacotes
+transmitidos por este dispositivo com a especificação sem causar erro
 
 Codificação do pacote de advertising
 
@@ -76,12 +100,23 @@ A estação de medidas foi desenvolvida utilizando o SoC NRF51822, produzido pel
 -> Sensores		
 
 \subsubsubsection{Ambiente de desenvolvimento}
-O ambiente de desenvolvimento foi baseado no Software Development Kit oferecido pelo fabricante do microcontrolador, o nRF5 SDK 12.3. Este SDK acelera o desenvolvimento do projeto por diminuir a necessidade de acesso direto aos registradores do microcontrolador para a operação de hardware, permitindo uma programação em nível mais elevado.
+O ambiente de desenvolvimento foi baseado no Software Development Kit oferecido
+pelo fabricante do microcontrolador, o nRF5 SDK 12.3. Este SDK acelera o
+desenvolvimento do projeto por diminuir a necessidade de acesso direto aos
+registradores do microcontrolador para a operação de hardware, permitindo uma
+programação em nível mais elevado.
+ 
+O projeto de firmware foi feito utilizando-se Makefile e o toolchain ARM-GCC,
+permitindo assim o desenvolvimento e compilação do projeto de forma
+independente de IDE.
 
-O projeto de firmware foi feito utilizando-se Makefile e o toolchain ARM-GCC, permitindo assim o desenvolvimento e compilação do projeto de forma independente de IDE.
-
-A IDE utilizada ao para o desenvolvimento foi o Eclipse IDE versão Oxygen. Além disso, foram necessárias as ferramentas NRFJPROG, software desenvolvido pelo fabricante do microcontrolador para realizar tarefas como gravação, leitura, apagar memória, etc., e a ferramenta Segger J-Link, como interface entre o computador e o microcontrolador para as operações do NRFJPROG e para a depuração do firmware.
-
+A IDE utilizada ao para o desenvolvimento foi o Eclipse IDE versão Oxygen. Além
+disso, foram necessárias as ferramentas NRFJPROG, software desenvolvido pelo
+fabricante do microcontrolador para realizar tarefas como gravação, leitura,
+apagar memória, etc., e a ferramenta Segger J-Link, como interface entre o
+computador e o microcontrolador para as operações do NRFJPROG e para a
+depuração do firmware.
+ 
 \subsubsubsection{Firmware}
 
 Estratégia de firmware orientado a eventos

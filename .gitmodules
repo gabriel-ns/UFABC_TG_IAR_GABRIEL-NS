@@ -1,0 +1,3 @@
+[submodule "Development/ble-sensor-station"]
+	path = Development/ble-sensor-station
+	url = https://github.com/gabriel-ns/ble-sensor-station.git
