@@ -1,17 +1,71 @@
 \section{Desenvolvimento}
 
 \subsection{Projeto}
+%TODO explicar a finalidade deste projeto
+Com a finalidade de oferecer uma referência de desenvolvimento de aplicações
+Bluetooth no contexto da Internet das Coisas, foi feito um projeto baseado em
+microcontroladores que implementa 
 
-O projeto desenvolvido tem como funcionalidade principal a coleta de leituras
+O projeto desenvolvido foi o de uma estação de monitoramento de variáveis
+ambientais, que tem como funcionalidade principal a realização de leituras
 periódicas de sensores com a transmissão sem fio das variáveis medidas
-utilizando o bluetooth low energy. Estes dados, quando recebidos, são enviados
-para a internet.
+utilizando o bluetooth low energy. Estes dados, quando recebidos por um scanner
+bluetooth, são enviados para a internet.
 
 Para tal, dividiu-se as tarefas em três sistemas diferentes: a estação de
 medidas, responsável pela coleta e transmissão das medididas através do
 bluetooth, o gateway BLE-Internet, responsável por captar os dados no ar e
 enviá-los para a internet, e a infraestrutura online, que recebe a informação e
 a armazena on-line.
+
+%TODO justificar as variáveis medidas e os critérios de seleção dos sensores
+
+Os sensores escolhidos para o projeto são:
+\begin{itemize}
+  \item BMP180: Sensor de pressão
+  \item TSL2561: Sensor de luminosidade
+  \item HTU21D: Sensor de temperatura e umidade
+\end{itemize}
+
+Todos os sensores especificados são digitais e possuem características low
+power. Além disso, o meio de acesso é o barramento I2C para todos os casos, fato
+que auxiliou o desenvolvimento do projeto devido a interface compartilhada entre
+todos os dispositivos.
+
+O sensor BMP180 é um sensor de pressão desenvolvido, produzido e vendido pela
+Bosch. É capaz de operar com tensões de 1.8V a 3.6V,consumindo uma corrente de
+0.1$\mu A$ a 4$\mu A$ nas temperaturas de $25\,^{\circ}{\rm C}$ e
+$85\,^{\circ}{\rm C}$ respectivamente. Durante a conversão dos valores de
+pressão, a corrente de pico varia entre 650$\mu A$ a 1000$\mu A$, e durante a
+operação a $25\,^{\circ}{\rm C}$ com frequência de amostragem de 1Hz, a
+corrente consumida fica entre 3$\mu A$ e 32$\mu A$ dependendo da resolução do
+configurada. \cite{BMP180Datasheet}
+
+Considerando o tempo máximo de conversão para cada resolução,
+estima-se que a frequência de amostragem máxima para este sensor fica entre
+222.22Hz(low power mode) e 13Hz(Advanced res. mode). O range de medidas do
+sensor é de 30kPa a 110kPa. \cite{BMP180Datasheet}
+
+O sensor TSL2561 
+
+O sensor HTU21D é um sensor de temperatura e umidade relativa do ar desenvolvido
+e produzido pela Measurement Specialities. Este sensor é low power, sendo capz e operar
+entre tensões de 1.5V e 3.6V com um consumo de corrente variando entre 0.02$\mu
+A$ e 0.14$\mu A$ em standby, e consumindo uma corrente que varia entre 300$\mu
+A$ a 500$\mu A$ durante a conversão de temperatura e umidade. \cite{HTU21DDatasheet}
+
+Possui uma  resolução configurável de 8 bits a 12 bits para a medida de umidade
+relativa do ar, que corresponde a 0.7\%RH e 0.04\%RH respectivamente com uma
+acurácia de 2\%RH, com duração de conversão é de 3ms (8 bits) a 16ms (12 bits).
+O sensor de umidade possui um tempo de resposta de 5 a 10 segundos para uma
+excitação em degrau de 33\%RH para 75\%RH. \cite{HTU21DDatasheet}
+
+Já para a medida de temperatura, a resolução é configurável entre 11 bits e 14
+bits, representando $0.08\,^{\circ}{\rm C}$ e $0.01\,^{\circ}{\rm C}$
+respectivamente, com uma acurácia de $0.3\,^{\circ}{\rm C}$ e com duração da
+conversão variando de 7ms (11 bits) a 50ms (14 bits). Possui um tempo de
+resposta de 10 segundos para uma excitação em degrau de $15\,^{\circ}{\rm C}$ a
+$45\,^{\circ}{\rm C}$.\cite{HTU21DDatasheet}
 
 \subsubsection{Estação de Medidas Bluetooth Low Energy}
 
@@ -29,6 +83,11 @@ pela Nordic Semiconductor. Este SoC conta com um processador ARM Cortex M0 de 32
 bits e com um transceiver de 2.4GHz multiprotocolo, sendo capaz de operar com
 os protocolos Bluetooth e ANT.\cite{nRF51ProdSpec}
 
+A plataforma escolhida leva em consideração as especificações energéticas do
+SoC, a possibilidade de depuração do código desenvolvido, a versatilidade de
+operar tanto a aplicação quanto o bluetooth dentro do mesmo chip e a
+disponibilidade do componente para o uso.
+
 \subsubsubsection{Estratégia para otimização de consumo energético}
 Com a finalidade de otimizar o consumo energético foi adotada a estratégia de
 manter o microcontrolador em modo deep sleep sempre que possível, sendo o mesmo
@@ -43,17 +102,19 @@ somente durante a configuração o dispositivo opera como um BLE Slave,
 permitindo que uma conexão seja estabelecida e que os serviços e
 características presentes sejam acessíveis.
 
-\subsubsubsection{Bluetooth Advertiser}
+\subsubsubsection{Bluetooth Advertiser} 
 No modo advertiser, o dispositivo transmite a informação de que este aceita o
 estabelecimento de conexões com centrais BLE. Além disso, estão presentes nos
 pacotes transmitidos as leituras realizadas pelos sensores.
 
 As informações dos sensores são codificadas como payload do pacote seguindo a
-seguinte estrutura de dados [ESTRUTURA]. Como formato de payload, optou-se por
-utilizar o Manufacturer Specific Data, evitando assim possíveis conflitos com
-pacotes BLE definidos pela especificação.
+estrutura de dados no código fonte \ref{lst:struct_adv}. Como formato de
+payload, optou-se por utilizar o Manufacturer Specific Data, evitando assim
+possíveis conflitos com pacotes BLE definidos pela especificação.
 
-\lstinputlisting{../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_frame.h}
+\lstinputlisting[firstline=11,lastline=18,label={lst:struct_adv},
+caption={Estrutura de dados para do pacote de leituras dos sensores}]
+{../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_frame.h}
 
 Os pacotes MSD são definidos na especificação suplementar, sendo o data type
 definido como  

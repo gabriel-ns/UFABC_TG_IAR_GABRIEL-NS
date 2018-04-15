@@ -6,17 +6,17 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage[left=3.00cm, right=3.00cm, top=3.00cm, bottom=2.00cm]{geometry}
+\usepackage[left=3.00cm, right=2.00cm, top=3.00cm, bottom=2.00cm]{geometry}
 \usepackage{cite}
- 	
 \usepackage{indentfirst} 
 \usepackage{tabularx,ragged2e,booktabs,caption}
 \usepackage{tikz}
 \usepackage{hyperref}
-
 \usepackage{color}
 
-\renewcommand{\lstlistingname}{Código}% Listing -> Algorithm
+\renewcommand{\baselinestretch}{1.5} 
+
+\renewcommand{\lstlistingname}{Código Fonte}% Listing -> Algorithm
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
@@ -65,11 +65,12 @@
 \newcommand{\course}{ENGENHARIA DE INSTRUMENTAÇÃO, AUTOMAÇÃO E ROBÓTICA}
 \newcommand{\local}{SANTO ANDRÉ}
 \newcommand{\theauthor}{GABRIEL NASCIMENTO DOS SANTOS}
-\newcommand{\thetitle}{BLUETOOTH LOW ENERGY}
+\newcommand{\thetitle}{DESENVOLVIMENTO DE REDE DE SENSORES BLUETOOTH LOW ENERGY
+CONECTADOS À NUVEM}
 \newcommand{\thedate}{2018}
 
 \begin{document}
-	
+		
 	\include{src/capa}
 
 	\include{src/rosto}
@@ -77,8 +78,6 @@
 	\include{src/resumo}
 	
 	\tableofcontents
-	
-	teste\cite{MicrochipLPDesign}
 
 	\include{src/introducao}
 	
@@ -90,6 +89,6 @@
 	
 	\bibliographystyle{ieeetr}
 	
-	\bibliography{references}
+	\bibliography{references.bib}
 	
 \end{document}
