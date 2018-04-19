@@ -46,7 +46,22 @@ estima-se que a frequência de amostragem máxima para este sensor fica entre
 222.22Hz(low power mode) e 13Hz(Advanced res. mode). O range de medidas do
 sensor é de 30kPa a 110kPa. \cite{BMP180Datasheet}
 
-O sensor TSL2561 
+O sensor TSL2561 é um sensor de luminosidade produzido pela empresa ams AG que combina um fotodiodo que responde numa larga faixa espectral (visível e infravermelho) e um fotodiodo que responde somente a faixa infravermelha do espectro. O sensor possui comunicação I2C que permite a configuração, leitura e envio de comandos. Os valores lidos pelo sensor são convertidos para iluminância em Lux através de uma fórmula empírica que busca se aproximar da resposta do olho humano. A característica de possuir dois fotodiodos permite com que o sensor trabalhe em regiões em que há uma incidência alta de luz infravermelha, pois com um fotodiodo dedicado ao infravermelho é possível medir e descontar a influência da luz infravermelha na medida de luminosidade. \cite{TSL2561Datasheet}
+
+A tensão de alimentação é de até 3.8V. Durante os períodos de conversão de luminosidade, o consumo de corrente varia entre 0.24mA e 0.6mA. Já no modo power down, o consumo de corrente varia entre 3.2$\mu A$ e 15$\mu A$. Possui uma resolução de 16 bits na saída do ADC que realiza as conversões nos fotodiodos. \cite{TSL2561Datasheet}
+
+\begin{listing}
+For 0 < CH1/CH0 ≤ 0.50
+Lux = 0.0304 × CH0 - 0.062 × CH0 × ((CH1/CH0)1.4)
+For 0.50 < CH1/CH0 ≤ 0.61
+Lux = 0.0224 × CH0 - 0.031 × CH1
+For 0.61 < CH1/CH0 ≤ 0.80
+Lux = 0.0128 × CH0 - 0.0153 × CH1
+For 0.80 < CH1/CH0 ≤ 1.30
+Lux = 0.00146 × CH0 - 0.00112 × CH1
+For CH1/CH0 > 1.30
+Lux = 0
+\end{listing}
 
 O sensor HTU21D é um sensor de temperatura e umidade relativa do ar desenvolvido
 e produzido pela Measurement Specialities. Este sensor é low power, sendo capz e operar
