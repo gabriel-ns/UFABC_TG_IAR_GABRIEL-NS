@@ -203,7 +203,7 @@ caption={Constante que define o UUID base dos serviços Bluetooth}]
 
 Este UUID foi construído convertendo para hexadecimal o código ASCII da mensagem
 \dblquote{UFABCIAR2018\_\_GN}, onde os caracteres \dblquote{\_\_} são os bytes
-$0x00$ deixados em branco para o preenchimento pelo UUID específico dos serviços
+0x00 deixados em branco para o preenchimento pelo UUID específico dos serviços
 bluetooth.
 
 Foram definidos e nomeados quatro serviços Bluetooth para o dispositivo: o APSS
@@ -211,18 +211,29 @@ Foram definidos e nomeados quatro serviços Bluetooth para o dispositivo: o APSS
 (Temperature and Humidity Sensor Service) e o RPCS (Radio Parameters
 Configuration Service).
 
+\newpage
 \subparagraph{Air Pressure Sensor Service}(APSS) 
 \newline
-O APSS é o serviço responsável pela configuração do sensor de pressão BMP180.
-Este sensor disponibiliza via Bluetooth as informações de pressão atmosférica e
-temperatura. Este serviço possui 5 características: Sensing Interval, Sensor
-Status, Sensor Resolution, Pressure Data, Temperature Data. Os identificadores
-de 2 bytes do serviço e de cada característica estão definidos no Código Fonte
-\ref{lst:apss_uuid}. 
+O APSS é o serviço responsável pela configuração e aquisição de dados do sensor
+de pressão BMP180. Este sensor disponibiliza via Bluetooth as informações de
+pressão atmosférica e temperatura. Este serviço possui 5 características:
 
+\begin{packed_itemize}
+ 	\item Sensing Interval
+ 	\item Sensor Status
+ 	\item Sensor Resolution
+ 	\item Pressure Data
+ 	\item Temperature Data.
+\end{packed_itemize}
+
+Os identificadores de 2 bytes do serviço e de cada característica estão
+definidos no Código Fonte \ref{lst:apss_uuid}. 
+
+\begin{minipage}{0.95\linewidth}
 \lstinputlisting[firstline=19,lastline=29,label={lst:apss_uuid},
 caption={UUID para o serviço APSS e suas características}]
 {../Development/ble-sensor-station/src/libs/ble/services/apss/ble_apss.h}
+\end{minipage}
 
 A característica Sensing Interval é uma característica que representa o
 intervalo entre as medidas de pressão e temperatura do sensor de BMP180
@@ -250,9 +261,11 @@ enumeração, sendo o primeiro elemento atribuido com o valor inteiro 0, e
 cada novo elemento soma-se 1 unidade ao valor atribuído, conforme
 a especificação do enum para a linguagem C.\cite{C99Spec}
 
+\begin{minipage}{0.95\linewidth}
 \lstinputlisting[firstline=42,lastline=47,label={lst:sensor_state_t},
 caption={Enumeração dos possíveis estados para o sensor}]
 {../Development/ble-sensor-station/src/libs/sensing/sensor_public_interface.h}
+\end{minipage}
 
 A característica Sensor Resolution determina a resolução e o modo de operação do
 sensor. Nesta característica com comprimento de 1 byte, permite-se a leitura sem
@@ -260,15 +273,17 @@ restrições e a escrita com validação do valor configurado. Os valores aceito
 para a escrita estão definidos pela enumeração do Código Fonte \ref{lst:bmp180_pwr_mode_t}.
 \cite{BMP180Datasheet}
 
+\begin{minipage}{0.95\linewidth}
 \lstinputlisting[firstline=14,lastline=21,label={lst:bmp180_pwr_mode_t},
 caption={Enumeração dos modos de operação configuráveis para o sensor BMP180s}]
 {../Development/ble-sensor-station/src/libs/sensing/bmp180_drv/bmp180_drv.h}
+\end{minipage}
 
 As características Pressure Data e Temperature Data são responsáveis pela
 transmissão das leituras realizadas pelos sensores. Nelas, armazena-se somente a
 leitura mais recente dos sensores sem o acesso ao histórico de leituras. Estas
 características permitem apenas a leitura, sem a possibilidade de escrita.
-Também é permitido a habilitar o recurso de Notify, que inicia a transmissão dos
+Também está habilitado o recurso de Notify, que permite a transmissão dos
 dados lidos dos sensores para o dispositivo conectado sem uma solicação de
 leitura, operando num sistema de streaming de dados sempre que uma nova leitura
 é realizada.
@@ -279,13 +294,215 @@ Já a Temperature Data, o comprimento é de 2 bytes, transmitindo a temperatura
 num formato \textbf{int16\_t}, sendo que cada unidade representa
 $0.01\,^{\circ}{\rm C}$ 
 
-\subparagraph{Luminosity Sensor Service}(LSS) 
-\newline
+A figura \ref{fig:resumo_apss} representa graficamente a construção do serviço
+Air Pressure Sensor Service.
 
+\begin{tcolorbox}[arc=3mm,fontupper=\small,fonttitle=\bfseries,
+subtitle style={boxrule=0.4pt, colback=white},colframe=green!25!black,
+halign=center,bottom=0mm,
+title=Air Pressure Sensor Service]
+	\setstretch{1.0}
+	UUID de 2 bytes do serviço: 0xABC1h
+	
+	\begin{tcbitemize}[raster columns=2,raster equal height,fontupper=\footnotesize,
+	colbacktitle=yellow!100!red!100!black, coltitle=black,
+	fonttitle=\footnotesize\bfseries,size=small, halign=center]
+	
+	\tcbitem [squeezed title={Sensing Interval Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0A00h \\ \hline
+		Tamanho & 4 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+		\tcbitem [squeezed title={Sensor Status Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0A01h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+		
+		\tcbitem [squeezed title={Sensor Resolution Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0A02h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+		\tcbitem [squeezed title={Pressure Data Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0A03h \\ \hline
+		Tamanho & 4 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Não permitida \\ \hline
+		Notificação & Habilitada 
+		\end{tabular}
+		
+		\tcbitem [squeezed title={Temperature Data Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0A04h \\ \hline
+		Tamanho & 2 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Não permitida \\ \hline
+		Notificação & Habilitada 
+		\end{tabular}		
+	\end{tcbitemize}
+	\tcblower
+	\captionof{figure}{Resumo da definição do serviço APSS}\label{fig:resumo_apss}
+\end{tcolorbox}
+
+\newpage
 \subparagraph{Temperature and Humidity Sensor Service}(THSS) 
 \newline
 
+\newpage
+\subparagraph{Luminosity Sensor Service}(LSS) 
+\newline
+O LSS é o serviço de configuração e aquisição de dados do sensor TSL2561. O
+sensor disponibiliza as leituras de luminosidade no espectro visível e
+luminosidade no espectro infravermelho. Este serviço possui 6 características:
+Sensing Interval; Sensor Status; Integration Time; Sensor Gain; Visible Lux
+Data e  Infrared Lux Data.
+% \begin{packed_itemize}
+%   \item Sensing Interval
+%   \item Sensor Status
+%   \item Integration Time
+%   \item Sensor Gain
+%   \item Visible Lux Data
+%   \item Infrared Lux Data
+% \end{packed_itemize}
+
+Os identificadores de 2 bytes do serviço e de cada característica estão
+definidos no Código Fonte \ref{lst:lss_uuid}. 
+
+\begin{minipage}{0.95\linewidth}
+\lstinputlisting[firstline=22,lastline=29,label={lst:lss_uuid},
+caption={UUID para o serviço APSS e suas características}]
+{../Development/ble-sensor-station/src/libs/ble/services/lss/ble_lss.h}
+\end{minipage}
+
+As características Sensing Interval e Sensor Status seguem as mesmas
+especificações do serviço APSS.
+
+A característica Integration Time configura a janela de amostragem do sensor.
+Esta característica permite a leitura do valor atual e permite a escrita com
+restrição, já que o sensor possui configurações pré definidas (13.7 ms, 101 ms
+ou 402 ms). O Código Fonte \ref{lst:tsl2561_integration_time_t} define os
+valores aceitos para escrita nesta característica. \cite{TSL2561Datasheet}
+
+\begin{minipage}{0.95\linewidth}
+\lstinputlisting[firstline=14,lastline=19,label={lst:tsl2561_integration_time_t},
+caption={Enumeração dos tempos de integração disponíveis para o TSL2561}]
+{../Development/ble-sensor-station/src/libs/sensing/tsl2561_drv/tsl2561_drv.h}
+\end{minipage}
+
+A característica Sensor Gain permite a configuração e leitura do valor atual do
+ganho interno do sensor, que pode ser 0 (sem ganho) ou 16 vezes. A escrita é
+permitida com restrição por permitir apenas dois valores. O Código Fonte
+\ref{lst:tsl2561_gain_t} define os valores aceitos para escrita nesta
+característica.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=21,lastline=25,label={lst:tsl2561_gain_t},
+caption={Enumeração das opções de ganho para o TSL2561}]
+{../Development/ble-sensor-station/src/libs/sensing/tsl2561_drv/tsl2561_drv.h}
+\end{minipage}
+
+As características Visible Lux Data e Infrared Lux Data seguem o mesmo padrão
+dos outros serviços para a apresentação dos dados, mantendo a última leitura e
+com o recurso de Notify habilitado.
+
+Ambas as características possuem 4 bytes de comprimento, transmitindo os dados
+num formato \textbf{uint32\_t}, representando as luminosidades correspondentes
+em Lux.
+
+A figura \ref{fig:resumo_lss} representa graficamente a construção do serviço
+Luminosity Sensor Service.
+
+\begin{tcolorbox}[arc=3mm,fontupper=\small,fonttitle=\bfseries,
+subtitle style={boxrule=0.4pt, colback=white},colframe=green!25!black,
+halign=center,bottom=0mm,
+title=Luminosity Sensor Service]
+	\setstretch{1.0}
+	UUID de 2 bytes do serviço: 0xABC3h
+	
+	\begin{tcbitemize}[raster columns=2,raster equal height,fontupper=\footnotesize,
+	colbacktitle=yellow!100!red!100!black, coltitle=black,
+	fonttitle=\footnotesize\bfseries,size=small, halign=center]
+	
+	\tcbitem [squeezed title={Sensing Interval Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0C00h \\ \hline
+		Tamanho & 4 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+		\tcbitem [squeezed title={Sensor Status Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0C01h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+		
+		\tcbitem [squeezed title={Sensor Integration Time Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0C02h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+		
+		\tcbitem [squeezed title={Sensor Gain Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0C03h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+		\tcbitem [squeezed title={Pressure Data Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0C04h \\ \hline
+		Tamanho & 4 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Não permitida \\ \hline
+		Notificação & Habilitada 
+		\end{tabular}
+		
+		\tcbitem [squeezed title={Temperature Data Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0C05h \\ \hline
+		Tamanho & 4 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Não permitida \\ \hline
+		Notificação & Habilitada 
+		\end{tabular}		
+	\end{tcbitemize}
+	\tcblower
+	\captionof{figure}{Resumo da definição do serviço LSS}\label{fig:resumo_lss}
+\end{tcolorbox}
+
 %End of Sensor Station
+
+\subsubsection{Infraestrutura online}
+
+\subsubsubsection{Servidor para recepção}
+
+\subsubsubsection{Armazenamento e Visualização}
+%end of infrastructure
+
 \subsubsection{Gateway Bluetooth - Internet}
 
 \subsubsubsection{Especificação}
@@ -293,14 +510,7 @@ $0.01\,^{\circ}{\rm C}$
 \subsubsubsection{Bluetooth Observer}
 
 \subsubsubsection{Conectividade}
-
 %end of BLE-Internet gateway
-\subsubsection{Infraestrutura online}
-
-\subsubsubsection{Servidor para recepção}
-
-\subsubsubsection{Armazenamento e Visualização}
-%end of infrastructure
 %end of project
 \subsection{Implementação}
 
@@ -344,7 +554,7 @@ depuração do firmware.
 %end of BLE-Internet gateway
 
 \subsubsection{Infraestrutura online}
--> Ambiente de desenvolvimento	
--> Coleta e armazenamento de dados
+% -> Ambiente de desenvolvimento	
+% -> Coleta e armazenamento de dados
 %end of infrastructure
 %end of implementation

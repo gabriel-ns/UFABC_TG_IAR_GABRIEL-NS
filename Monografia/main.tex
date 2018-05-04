@@ -13,8 +13,17 @@
 \usepackage{tikz}
 \usepackage{hyperref}
 \usepackage{color}
+\usepackage[all]{tcolorbox}
+\usepackage{setspace}
 
-\graphicspath{ {img/} }
+\newenvironment{packed_itemize}{
+\begin{itemize}
+  \setlength{\itemsep}{0.5pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+}{\end{itemize}}
+
+\graphicspath{ {img/} } 
 
 \renewcommand{\baselinestretch}{1.5} 
 
