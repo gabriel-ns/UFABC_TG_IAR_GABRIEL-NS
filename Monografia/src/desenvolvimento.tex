@@ -41,7 +41,7 @@ power. Além disso, o meio de acesso é o barramento I2C para todos os casos, fa
 que auxiliou o desenvolvimento do projeto devido a interface compartilhada entre
 todos os dispositivos.
 
-\subparagraph{BMP180} O sensor BMP180, como mostrado no módulo da figura
+\subparagraph{BMP180} O sensor BMP180, presente no placa da figura
 \ref{fig:bmp180breakout} é um sensor de pressão desenvolvido, produzido e vendido pela Bosch. É capaz de
 operar com tensões de 1.8V a 3.6V,consumindo uma corrente de 0.1$\mu A$ a 4$\mu
 A$ nas temperaturas de $25\,^{\circ}{\rm C}$ e $85\,^{\circ}{\rm C}$ respectivamente. 
@@ -63,7 +63,7 @@ estima-se que a frequência de amostragem máxima para este sensor fica entre
 sensor é de 30kPa a 110kPa. \cite{BMP180Datasheet}
 
 
-\subparagraph{TSL2561} O sensor TSL2561,como mostrado na figura
+\subparagraph{TSL2561} O sensor TSL2561, presente na placa da figura
 \ref{fig:tsl2561breakout}, é um sensor de luminosidade produzido pela empresa
 ams AG que combina um fotodiodo que responde numa larga faixa espectral
 (visível e infravermelho) e um fotodiodo que responde somente a faixa
@@ -78,12 +78,12 @@ configuração, leitura e envio de comandos.
 \end{center} 
 
 Os valores lidos pelo sensor são convertidos para
-iluminância em Lux através de uma fórmula empírica que busca se aproximar da
-resposta do olho humano. A característica de possuir dois fotodiodos permite
-com que o sensor trabalhe em regiões em que há uma incidência alta de luz
-infravermelha, pois com um fotodiodo dedicado ao infravermelho é possível medir
-e descontar a influência da luz infravermelha na medida de luminosidade.
-\cite{TSL2561Datasheet}
+iluminância em Lux através de uma equalção empírica fornecida pelo fabricante
+que busca se aproximar da resposta do olho humano. A característica de possuir
+dois fotodiodos permite com que o sensor trabalhe em regiões em que há uma
+incidência alta de luz infravermelha, pois com um fotodiodo dedicado ao
+infravermelho é possível medir e descontar a influência da luz infravermelha na
+medida de luminosidade.\cite{TSL2561Datasheet}
 
 A tensão de alimentação é de até 3.8V. Durante os períodos de conversão de
 luminosidade, o consumo de corrente varia entre 0.24mA e 0.6mA. Já no modo
@@ -104,12 +104,13 @@ fotodiodos. \cite{TSL2561Datasheet}
 % Lux = 0
 % \end{listing}
 
-\subparagraph{HTU21D} O sensor HTU21D, como mostra a figura \ref{fig:htu21breakout} é um
-sensor de temperatura e umidade relativa do ar desenvolvido e produzido pela
-Measurement Specialities. Este sensor é low power, sendo capz e operar entre
-tensões de 1.5V e 3.6V com um consumo de corrente variando entre 0.02$\mu A$ e
-0.14$\mu A$ em standby, e consumindo uma corrente que varia entre 300$\mu A$ a
-500$\mu A$ durante a conversão de temperatura e umidade. \cite{HTU21DDatasheet}
+\subparagraph{HTU21D} O sensor HTU21D, presente na placa da figura
+\ref{fig:htu21breakout}, é um sensor de temperatura e umidade relativa do ar
+desenvolvido e produzido pela Measurement Specialities. Este sensor é low
+power, sendo capaz e operar entre tensões de 1.5V e 3.6V com um consumo de
+corrente variando entre 0.02$\mu A$ e 0.14$\mu A$ em standby, e consumindo uma
+corrente que varia entre 300$\mu A$ a 500$\mu A$ durante a conversão de
+temperatura e umidade. \cite{HTU21DDatasheet}
 
 \begin{center}
 	\centering 
@@ -136,11 +137,21 @@ $45\,^{\circ}{\rm C}$.\cite{HTU21DDatasheet}
 A estação de medidas foi projetada para atender os requisitos propostos,
 visando o mínimo consumo energético para possibilitar a alimentação através de
 baterias sem a necessidade de manutenções frequentes.
+
+Para a transmissão das variáveis medidas pelos sensores utiliza-se o dispositivo
+no modo BLE Advertiser, codificando os valores obtidos de forma ordenada dentro
+de um pacote de advertising do bluetooth, permitindo que qualquer dispositivo
+BLE próximo que seja capaz de detectar a presença da estação de medidas
+receba os valores de todas as variáveis medidas.
+
+Este método foi escolhido visando o mínimo consumo de energia por dispensar uma
+conexão para a transmissão dos dados.
  
 Como diferencial a estação permite a configuração de sua operação através de
 serviços GATT do BLE, sendo possível alterar tanto as configurações de rádio
 (potêcia e intervalo de transmissão) quanto os parâmetros de configuração dos
-sensores (range, escala, intervalo entre medidas).
+sensores (range, escala, intervalo entre medidas). Além disso, os serviços dos
+sensores permitem o streaming das novas leituras.
 
 O hardware selecionado para a estação de medidas é o SoC nRF51822, produzido
 pela Nordic Semiconductor. Este SoC conta com um processador ARM Cortex M0 de 32
@@ -167,9 +178,11 @@ permitindo que uma conexão seja estabelecida e que os serviços e
 características presentes sejam acessíveis.
 
 \subsubsubsection{Bluetooth Advertiser} 
-No modo advertiser, o dispositivo transmite a informação de que este aceita o
-estabelecimento de conexões com centrais BLE. Além disso, estão presentes nos
-pacotes transmitidos as leituras realizadas pelos sensores.
+No modo advertiser, o dispositivo transmite seu endereço MAC e a informação de
+que este aceita o estabelecimento de conexões com centrais BLE, que permite
+acesso aos serviços BLE que serão descritos posteriormente.
+Além disso, estão presentes nos pacotes transmitidos as leituras realizadas
+pelos sensores.
 
 As informações dos sensores são codificadas como payload do pacote seguindo a
 estrutura de dados no código fonte \ref{lst:struct_adv}. Como formato de
@@ -217,14 +230,16 @@ Configuration Service).
 O APSS é o serviço responsável pela configuração e aquisição de dados do sensor
 de pressão BMP180. Este sensor disponibiliza via Bluetooth as informações de
 pressão atmosférica e temperatura. Este serviço possui 5 características:
+Sensing Interval, Sensor Status, Sensor Resolution, Pressure Data, Temperature
+Data.
 
-\begin{packed_itemize}
- 	\item Sensing Interval
- 	\item Sensor Status
- 	\item Sensor Resolution
- 	\item Pressure Data
- 	\item Temperature Data.
-\end{packed_itemize}
+% \begin{packed_itemize}
+%  	\item Sensing Interval
+%  	\item Sensor Status
+%  	\item Sensor Resolution
+%  	\item Pressure Data
+%  	\item Temperature Data.
+% \end{packed_itemize}
 
 Os identificadores de 2 bytes do serviço e de cada característica estão
 definidos no Código Fonte \ref{lst:apss_uuid}. 
@@ -361,6 +376,111 @@ title=Air Pressure Sensor Service]
 \subparagraph{Temperature and Humidity Sensor Service}(THSS) 
 \newline
 
+O THSS é o serviço de configuração e aquisição de dados do sensor HTU21D, que
+disponibiliza as leituras de temperatura e umidade relativa do ar. O serviço
+possui 5 características: Sensing Interval, Sensor Status, Sensor Resolution,
+Temperature Data e Humidity Data.
+
+O indentificador de 2 bytes do serviço e de cada característica estão
+disponíveis no código fonte \ref{lst:thss_uuid}.
+
+\begin{minipage}{0.95\linewidth}
+\lstinputlisting[firstline=22,lastline=28,label={lst:thss_uuid},
+caption={UUID para o serviço THSS e suas características}]
+{../Development/ble-sensor-station/src/libs/ble/services/thss/ble_thss.h}
+\end{minipage}
+
+As características Sensing Interval e Sensor Status seguem as mesmas
+especificações do serviço APSS.
+
+A característica Sensor Resolution é uma característica de 1 byte permite a
+configuração e leitura da resolução das medidas de temperatura e umidade. As
+resoluções das medidas são dependentes uma da outra, sendo as combinações
+definidas pelo fabricante. O código fonte \ref{lst:htu21d_resoluion_t} reflete
+as opções de resolução oferecidas. Os números indicados na resolução
+representam o número de bits.
+
+\begin{minipage}{0.95\linewidth}
+\lstinputlisting[firstline=14,lastline=20,label={lst:htu21d_resolution_t},
+caption={Enumeração das combinações de resolução do HTU21D}]
+{../Development/ble-sensor-station/src/libs/sensing/htu21d_drv/htu21d_drv.h}
+\end{minipage}
+
+As características Temperature Data e Humidity Data seguem os mesmos padrões de
+apresentação de dados do serviço APSS, sendo possível somente a leitura com
+possibilidade de notificação. Ambas possuem o tamanho de 2 bytes, sendo que a
+temperatura é transmitida no formato \textbf{int16\_t} enquanto a umidade segue
+o formato \textbf{uint16\_t}.
+
+Para a temperatura a unidade transmitida é centésimos de $^{\circ}{\rm C}$,
+enquanto a umidade relativa é transmitida em centésimos de \%RH. A conversão de
+unidades foi feita para possibilitar a transmissão dos valores com as precisões
+lidas pelos sensores sem a necessidade de utilizar ponto flutuante no software e
+sem prejuízo aos dados.
+
+A figura \ref{fig:resumo_thss} representa graficamente a construção do serviço
+Temperature and Humidity Sensor Service
+
+\begin{tcolorbox}[arc=3mm,fontupper=\small,fonttitle=\bfseries,
+subtitle style={boxrule=0.4pt, colback=white},colframe=green!25!black,
+halign=center,bottom=0mm,
+title=Temperature and Humidity Sensor Service]
+	\setstretch{1.0}
+	UUID de 2 bytes do serviço: 0xABC2h
+	
+	\begin{tcbitemize}[raster columns=2,raster equal height,fontupper=\footnotesize,
+	colbacktitle=yellow!100!red!100!black, coltitle=black,
+	fonttitle=\footnotesize\bfseries,size=small, halign=center]
+	
+	\tcbitem [squeezed title={Sensing Interval Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0B00h \\ \hline
+		Tamanho & 4 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+		\tcbitem [squeezed title={Sensor Status Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0B01h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+		
+		\tcbitem [squeezed title={Sensor Resolution Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0B02h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+		\tcbitem [squeezed title={Temperature Data Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0B03h \\ \hline
+		Tamanho & 2 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Não permitida \\ \hline
+		Notificação & Habilitada 
+		\end{tabular}
+		
+		\tcbitem [squeezed title={Humidity Data Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0B04h \\ \hline
+		Tamanho & 2 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Não permitida \\ \hline
+		Notificação & Habilitada 
+		\end{tabular}		
+	\end{tcbitemize}
+	\tcblower
+	\captionof{figure}{Resumo da definição do serviço THSS}\label{fig:resumo_thss}
+\end{tcolorbox}
+
 \newpage
 \subparagraph{Luminosity Sensor Service}(LSS) 
 \newline
@@ -383,7 +503,7 @@ definidos no Código Fonte \ref{lst:lss_uuid}.
 
 \begin{minipage}{0.95\linewidth}
 \lstinputlisting[firstline=22,lastline=29,label={lst:lss_uuid},
-caption={UUID para o serviço APSS e suas características}]
+caption={UUID para o serviço LSS e suas características}]
 {../Development/ble-sensor-station/src/libs/ble/services/lss/ble_lss.h}
 \end{minipage}
 
