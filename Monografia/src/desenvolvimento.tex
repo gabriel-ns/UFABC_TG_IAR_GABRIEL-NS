@@ -139,7 +139,7 @@ visando o mínimo consumo energético para possibilitar a alimentação através
 baterias sem a necessidade de manutenções frequentes.
 
 Para a transmissão das variáveis medidas pelos sensores utiliza-se o dispositivo
-no modo BLE Advertiser, codificando os valores obtidos de forma ordenada dentro
+no modo BLE Broadcaster, codificando os valores obtidos de forma ordenada dentro
 de um pacote de advertising do bluetooth, permitindo que qualquer dispositivo
 BLE próximo que seja capaz de detectar a presença da estação de medidas
 receba os valores de todas as variáveis medidas.
@@ -171,14 +171,14 @@ e de leitura de sensores. Durante os períodos em sleep todos os sensores devem
 estar num estado de baixo consumo de energia.\cite{MicrochipLPDesign}
 
 Ainda na otimização do consumo, a estratégia adotada para a transmissão dos
-dados dos sensores foi concepção do dispositivo operando como um BLE advertiser
+dados dos sensores foi concepção do dispositivo operando como um BLE broadcaster
 pois desta forma se reduz o período no qual há a necessidade do rádio, e
 somente durante a configuração o dispositivo opera como um BLE Slave,
 permitindo que uma conexão seja estabelecida e que os serviços e
 características presentes sejam acessíveis.
 
-\subsubsubsection{Bluetooth Advertiser} 
-No modo advertiser, o dispositivo transmite seu endereço MAC e a informação de
+\subsubsubsection{Bluetooth Broadcaster} 
+No modo Broadcaster, o dispositivo transmite seu endereço MAC e a informação de
 que este aceita o estabelecimento de conexões com centrais BLE, que permite
 acesso aos serviços BLE que serão descritos posteriormente.
 Além disso, estão presentes nos pacotes transmitidos as leituras realizadas
@@ -618,7 +618,18 @@ title=Luminosity Sensor Service]
 
 \subsubsection{Infraestrutura online}
 
-\subsubsubsection{Servidor para recepção}
+A infraestrutura online escolhida foi o AWS IoT Core, oferecido pela Amazon Web
+Services. O AWS IoT Core é uma plataforma que permite a conexão de dispositivos
+a aplicativos de nuvem que possui alta capacidade de tráfego de dados,
+suportando bilhões de dispositivos conectados e trilhões de mensagens, sendo
+capaz também de processar e rotear os dados para outros serviços online.
+\cite{AWS_IoTCore}
+
+\subsubsubsection{Serviço para recepção de mensagens}
+
+O AWS IoT Core oferece um dashboard online que permite a criação de dispositivos 
+
+
 
 \subsubsubsection{Armazenamento e Visualização}
 %end of infrastructure
@@ -646,7 +657,7 @@ O ambiente de desenvolvimento foi baseado no Software Development Kit oferecido
 pelo fabricante do microcontrolador, o nRF5 SDK 12.3. Este SDK acelera o
 desenvolvimento do projeto por diminuir a necessidade de acesso direto aos
 registradores do microcontrolador para a operação de hardware, permitindo uma
-programação em nível mais elevado.
+programação em nível mais alto.
  
 O projeto de firmware foi feito utilizando-se Makefile e o toolchain ARM-GCC,
 permitindo assim o desenvolvimento e compilação do projeto de forma
@@ -657,9 +668,17 @@ disso, foram necessárias as ferramentas NRFJPROG, software desenvolvido pelo
 fabricante do microcontrolador para realizar tarefas como gravação, leitura,
 apagar memória, etc., e a ferramenta Segger J-Link, como interface entre o
 computador e o microcontrolador para as operações do NRFJPROG e para a
-depuração do firmware.
+depuração do firmware. 
+
+\subsubsubsection{Orientação a eventos}
  
-\subsubsubsection{Firmware}
+\subsubsubsection{Arquitetura de Firmware}
+
+\subsubsubsection{Operação dos sensores}
+
+\subsubsubsection{Bluetooth Broadcaster}
+
+\subsubsubsection{Bluetooth Slave}
 
 % Estratégia de firmware orientado a eventos
 % Linhas gerais sobre firmware para sensores
