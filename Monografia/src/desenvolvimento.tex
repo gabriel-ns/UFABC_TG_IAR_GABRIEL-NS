@@ -1,10 +1,11 @@
 \section{Desenvolvimento}
 
 \subsection{Projeto}
-%TODO explicar a finalidade deste projeto
 Com a finalidade de oferecer uma referência de desenvolvimento de aplicações
 Bluetooth no contexto da Internet das Coisas, foi feito um projeto baseado em
-microcontroladores que implementa (\ldots) %TODO
+microcontroladores que implementa um dispositivo conectável e configurável via
+bluetooth, exemplificando as etapas de projeto envolvidas nos dispositivos que
+operam como Broadcaster, Slave e Scanner.
 
 O projeto desenvolvido foi o de uma estação de monitoramento de variáveis
 ambientais, que tem como funcionalidade principal a realização de leituras
@@ -12,7 +13,7 @@ periódicas de sensores com a transmissão sem fio das variáveis medidas
 utilizando o bluetooth low energy. Estes dados, quando recebidos por um scanner
 bluetooth, são enviados para a internet.
 
-Para tal, dividiu-se as tarefas em três sistemas diferentes, como mostra a
+Para tal, dividiu-se as tarefas em três subsistemas diferentes, como mostra a
 figura \ref{fig:project_overview}:
 a estação de medidas, responsável pela coleta e transmissão das medididas através do
 bluetooth, o gateway BLE-Internet, responsável por captar os dados no ar e
@@ -26,11 +27,52 @@ a armazena on-line.
 	\label{fig:project_overview}
 \end{center} 
 
+O principal dispositivo bluetooth desenvolvido neste trabalho é a estação de
+medidas que opera como Broadcaster e Slave, que terá suas etapas de projeto e
+implementação descritas com mais detalhes.
+
+\subsubsection{Estação de Medidas Bluetooth Low Energy}
+
+A estação de medidas foi projetada para atender os requisitos propostos,
+visando o mínimo consumo energético para possibilitar a alimentação através de
+baterias sem a necessidade de manutenções frequentes.
+
+Para a transmissão das variáveis medidas pelos sensores utiliza-se o dispositivo
+no modo BLE Broadcaster, codificando os valores obtidos de forma ordenada dentro
+de um pacote de advertising do bluetooth, permitindo que qualquer dispositivo
+BLE próximo que seja capaz de detectar a presença da estação de medidas
+receba os valores de todas as variáveis medidas.
+
+Este método foi escolhido visando o mínimo consumo de energia por dispensar uma
+conexão para a transmissão dos dados.
+ 
+Como diferencial a estação permite a configuração de sua operação através de
+serviços GATT do BLE, sendo possível alterar tanto as configurações de rádio
+(potêcia e intervalo de transmissão) quanto os parâmetros de configuração dos
+sensores (range, escala, intervalo entre medidas). Além disso, os serviços dos
+sensores permitem o streaming das novas leituras.
+
+\subsubsubsection{Seleção de componentes}
+
 %TODO justificar as variáveis medidas e os critérios de seleção dos sensores,
 % incluindo a disponibilidade de breakout boards
 
-Os sensores escolhidos para o projeto são:
-\begin{itemize}
+O hardware selecionado para a estação de medidas é o SoC nRF51822, produzido
+pela Nordic Semiconductor. Este SoC conta com um processador ARM Cortex M0 de 32
+bits e com um transceiver de 2.4GHz multiprotocolo, sendo capaz de operar com
+os protocolos Bluetooth e ANT.\cite{nRF51ProdSpec}
+
+Com o processador desligado e mantendo a memória RAM, o microcontrolador consome
+uma corrente de 3.8$\mu A$,
+
+A plataforma escolhida leva em consideração as especificações energéticas do
+SoC, que é capaz de consumir uma corrente de 3.8$\mu A$ com o processador
+desligado mantendo a memória RAM\cite{nRF51ProdSpec}, a possibilidade de
+depuração do código desenvolvido, a versatilidade de operar tanto a aplicação
+quanto o bluetooth dentro do mesmo chip e a disponibilidade do componente para o uso.
+
+Já os sensores escolhidos para o projeto são:
+\begin{itemize} 
   \item BMP180: Sensor de pressão
   \item TSL2561: Sensor de luminosidade
   \item HTU21D: Sensor de temperatura e umidade
@@ -131,37 +173,6 @@ respectivamente, com uma acurácia de $0.3\,^{\circ}{\rm C}$ e com duração da
 conversão variando de 7ms (11 bits) a 50ms (14 bits). Possui um tempo de
 resposta de 10 segundos para uma excitação em degrau de $15\,^{\circ}{\rm C}$ a
 $45\,^{\circ}{\rm C}$.\cite{HTU21DDatasheet}
-
-\subsubsection{Estação de Medidas Bluetooth Low Energy}
-
-A estação de medidas foi projetada para atender os requisitos propostos,
-visando o mínimo consumo energético para possibilitar a alimentação através de
-baterias sem a necessidade de manutenções frequentes.
-
-Para a transmissão das variáveis medidas pelos sensores utiliza-se o dispositivo
-no modo BLE Broadcaster, codificando os valores obtidos de forma ordenada dentro
-de um pacote de advertising do bluetooth, permitindo que qualquer dispositivo
-BLE próximo que seja capaz de detectar a presença da estação de medidas
-receba os valores de todas as variáveis medidas.
-
-Este método foi escolhido visando o mínimo consumo de energia por dispensar uma
-conexão para a transmissão dos dados.
- 
-Como diferencial a estação permite a configuração de sua operação através de
-serviços GATT do BLE, sendo possível alterar tanto as configurações de rádio
-(potêcia e intervalo de transmissão) quanto os parâmetros de configuração dos
-sensores (range, escala, intervalo entre medidas). Além disso, os serviços dos
-sensores permitem o streaming das novas leituras.
-
-O hardware selecionado para a estação de medidas é o SoC nRF51822, produzido
-pela Nordic Semiconductor. Este SoC conta com um processador ARM Cortex M0 de 32
-bits e com um transceiver de 2.4GHz multiprotocolo, sendo capaz de operar com
-os protocolos Bluetooth e ANT.\cite{nRF51ProdSpec}
-
-A plataforma escolhida leva em consideração as especificações energéticas do
-SoC, a possibilidade de depuração do código desenvolvido, a versatilidade de
-operar tanto a aplicação quanto o bluetooth dentro do mesmo chip e a
-disponibilidade do componente para o uso.
 
 \subsubsubsection{Estratégia para otimização de consumo energético}
 Com a finalidade de otimizar o consumo energético foi adotada a estratégia de
@@ -627,7 +638,7 @@ capaz também de processar e rotear os dados para outros serviços online.
 
 \subsubsubsection{Serviço para recepção de mensagens}
 
-O AWS IoT Core oferece um dashboard online que permite a criação de dispositivos 
+O AWS IoT Core oferece um dashboard online que permite a criação de dispositivos.
 
 
 
@@ -647,12 +658,10 @@ O AWS IoT Core oferece um dashboard online que permite a criação de dispositiv
 
 \subsubsection{Estação de Medidas Bluetooth Low Energy}
 
-% A estação de medidas foi desenvolvida utilizando o SoC NRF51822, produzido pela Nordic
-% -> Hardware
-% -> Microcontrolador
-% -> Sensores		
+\subsubsubsection{Hardware}
 
 \subsubsubsection{Ambiente de desenvolvimento}
+
 O ambiente de desenvolvimento foi baseado no Software Development Kit oferecido
 pelo fabricante do microcontrolador, o nRF5 SDK 12.3. Este SDK acelera o
 desenvolvimento do projeto por diminuir a necessidade de acesso direto aos
@@ -661,20 +670,116 @@ programação em nível mais alto.
  
 O projeto de firmware foi feito utilizando-se Makefile e o toolchain ARM-GCC,
 permitindo assim o desenvolvimento e compilação do projeto de forma
-independente de IDE.
+independente de IDE. Há também a possibilidade de desenvolvimento com a IDE
+Keil, que é especifico para microcontroladores ARM. 
 
 A IDE utilizada ao para o desenvolvimento foi o Eclipse IDE versão Oxygen. Além
 disso, foram necessárias as ferramentas NRFJPROG, software desenvolvido pelo
 fabricante do microcontrolador para realizar tarefas como gravação, leitura,
 apagar memória, etc., e a ferramenta Segger J-Link, como interface entre o
 computador e o microcontrolador para as operações do NRFJPROG e para a
-depuração do firmware. 
+depuração do firmware. Para a gravação, há também a opção de se utilizar o
+software nFR GO Studio, também desenvolvido e distribuido pela Nordic
+Semiconductor.
+
+A vantagem da utilização das ferramentas NRFJPROG em conjunto com o J-Link e o
+Eclipse é a possibilidade de depuração do código.
+
+O makefile é o arquivo destinado a automação da compilação de todos os
+componentes de software envolvidos no projeto. Nele foram definidos todos os
+arquivos que são compilados no projeto, como mostra o código fonte
+\ref{lst:make_proj_files}, bem como todas as instruções dadas ao compilador no
+formato de flags de compilação, como mostra o código fonte \ref{lst:make_flags}
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=11,lastline=25,label={lst:make_proj_files},
+caption={Lista dos arquivos de projeto para compilação}] 
+{../Development/ble-sensor-station/Makefile}
+\end{minipage}
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=115,lastline=133,label={lst:make_flags},
+caption={Flags de compilação comuns a todos os arquivos}] 
+{../Development/ble-sensor-station/Makefile}
+\end{minipage}
+
+Os arquivos com o caminho iniciado com \dblquote{\$(PROJ\_DIR)} são referentes
+aos arquivos de projeto produzidos ao longo deste trabalho, enquanto os arquivos
+com caminho iniciado com \dblquote{\$(SDK\_DIR)} são arquivos do Software
+Development Kit oferecido pelo fabricante, e \dblquote{\$(PROJ\_DIR)} e
+\dblquote{\$(SDK\_DIR)} são variáveis definidas no início do arquivo indicando a
+localização da pasta de projeto e da pasta do SDK.
+% TODO focar no como
+% explicar o passo a passo melhor
 
 \subsubsubsection{Orientação a eventos}
  
-\subsubsubsection{Arquitetura de Firmware}
+
+
+\subsubsubsection{Arquitetura de Software}
+
+A arquitetura de software segue o esquema presente na figura
+\ref{fig:architecture}.   
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.9\linewidth]{Arquitetura.png}
+	\captionof{figure}{Arquitetura com todos os módulos do Software}
+	\label{fig:architecture}
+\end{center} 
+
 
 \subsubsubsection{Operação dos sensores}
+
+Toda operação de aquisição de dados ou de configuração realizada pelos sensores
+é controlada pelo módulo Sensor Controller, que oferece uma interface para a
+configurar, ligar ou desligar e definir o período de amostragem dos sensores. O
+código fonte \ref{lst:sensor_controller_interface} mostra a interface oferecida
+no arquivo \dblquote{sensor\_controller.h}.
+ 
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=107,lastline=141,label={lst:sensor_controller_interface},
+caption={Interface criada para acesso aos
+sensores},basicstyle=\scriptsize\ttfamily]
+{../Development/ble-sensor-station/src/libs/sensing/sensor_controller.h}
+\end{minipage}
+
+Na inicialização, todos os sensores são configurados com os valores padrão que
+são definidos no momento da compilação e seus respectivos timers inicializam. O
+código fonte \ref{lst:pressure_init} mostra o código de inicialização para o
+sensor de pressão presente no arquivo \dblquote{sensor\_controller.c}. O mesmo
+padrão é seguido para os outros sensores.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=66,lastline=87,label={lst:pressure_init},
+caption={Inicialização do sensor de pressão}] 
+{../Development/ble-sensor-station/src/libs/sensing/sensor_controller.c}
+\end{minipage}
+
+Para manter a orientação a eventos, os sensores são acessados para
+leitura somente quando há um evento de estouro do timer relacionado àquele
+sensor, eliminando a utilização de delays dentro do programa. 
+
+Na ocorrência deste evento, o Sensor Controller envia um comando de
+leitura para o driver do sensor, que por sua vez aciona o sensor e
+preparar um timer que estoura somente quando o sensor concluir o processo
+de medição, mantendo assim o microcontrolador em modo sleep enquanto o sensor
+opera. Este esquema de operação é mostrado no diagrama de sequência da figura
+\ref{fig:sensor_op}.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.65\linewidth]{sensor_op.png}
+	\captionof{figure}{Sequência de operações dos sensores}
+	\label{fig:sensor_op}
+\end{center} 
+
+Quando a leitura do sensor é obtida pelo driver um evento é gerado para o Sensor
+Controller, que armazena este valor numa variável e gera um evento para os
+outros módulos do software que utilizam estes valores.
+
+Assim como o Sensor Controller, todos os drivers para os sensores foram
+implementados seguindo o mesmo padrão de operação através de interrupções.
 
 \subsubsubsection{Bluetooth Broadcaster}
 
