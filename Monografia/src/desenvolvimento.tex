@@ -649,6 +649,30 @@ O AWS IoT Core oferece um dashboard online que permite a criação de dispositiv
 
 \subsubsubsection{Especificação}
 
+O Gateway Bluetooth - Internet é o dispositivo responsável por monitorar os
+pacotes BLE presentes no ar, indentificar o pacote específico transmitido pela
+estação de medidas, decodificá-lo e enviá-lo para a infraestrutura online.
+
+Este dispositivo deverá se manter conectado a internet, seja por rede cabeada
+ou através de Wi-Fi, e ao mesmo tempo se manter como um BLE Observer, captando os
+pacotes bluetooth.
+
+Ao decodificar os pacotes alvo, o envio para a internet se dará pelo protocolo MQTT,
+que é oferecido como interface na infraestrutura online.
+
+\subsubsubsection{Hardware escolhido}
+
+%TODO SoC
+O hardware escolhido foi SoC ESP32, produzido pela Espressif Systems, que já possui
+comunicação via Wi-Fi e BLE integrado ao chip, sendo possível utilizar as duas funções
+simultaneamente.
+
+%TODO SDK, FREE RTOS
+O SDK do fabricante oferece exemplos de utilização do Bluetooth, Wi-Fi, e também disponibiliza
+de forma gratuita o sistema operacional Amazon FREE-RTOS, uma versão do FREE-RTOS customizada 
+pela Amazon, que amplia as funcionalidades com bibliotecas de software que auxiliam a conexão
+de sistemas embarcados com os serviços de nuvem AWS.
+
 \subsubsubsection{Bluetooth Observer}
 
 \subsubsubsection{Conectividade}
