@@ -88,7 +88,35 @@ Tratando as unidades dos dados da tabela, os valores lidos dos sensores são:
 
 \subsubsection{Bluetooth Observer}
 
-\subsubsection{Decodificação dos pacotes}
+%TODO MAC, RSSI
+O primeiro teste realizado sobre o funcionamento do Bluetooth Observer foi a
+obtenção de pacotes com envio das informações recebidas através da porta serial
+do microcontrolador, mostrando os dados: endereço MAC, RSSI do sinal, o tamanho
+do pacote recebido e os dados do pacote. A figura \ref{fig:adv_list} mostra as
+mensagens recebidas através de um terminal serial.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.8\linewidth]{adv_list.png}
+	\captionof{figure}{Pacotes de advertising detectados pelo ESP32}
+	\label{fig:adv_list}
+\end{center} 
+
+\subsubsection{Filtragem e Decodificação dos pacotes}
+Os testes com as funções responsáveis por filtrar e decodificar os pacotes foram
+testadas no mesmo modelo, através de mensagens enviadas por meio da porta
+serial.
+
+A figura \ref{} mostra os pacotes filtrados e decodificados no terminal serial,
+com o endereço do dispositivo e o valor das variáveis medidas.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.8\linewidth]{adv_list.png}
+	\captionof{figure}{Pacotes de advertising detectados pelo ESP32}
+	\label{fig:adv_list}
+\end{center} 
+
 
 \subsubsection{Conexão com o AWS IoT Core}
 
