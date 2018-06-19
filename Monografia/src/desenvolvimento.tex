@@ -729,18 +729,44 @@ caption={Flags de compilação comuns a todos os arquivos}]
 {../Development/ble-sensor-station/Makefile}
 \end{minipage}
 
+%TODO definir SDK
 Os arquivos com o caminho iniciado com \dblquote{\$(PROJ\_DIR)} são referentes
 aos arquivos de projeto produzidos ao longo deste trabalho, enquanto os arquivos
 com caminho iniciado com \dblquote{\$(SDK\_DIR)} são arquivos do Software
 Development Kit oferecido pelo fabricante, e \dblquote{\$(PROJ\_DIR)} e
 \dblquote{\$(SDK\_DIR)} são variáveis definidas no início do arquivo indicando a
 localização da pasta de projeto e da pasta do SDK.
+
+Para a inicialização do projeto é disponibilizado no próprio SDK, na pasta de
+exemplos, um template de projeto que contém o Makefile adequado bem como o
+arquivo \dblquote{main.c}, sendo o primeiro passo customizar as bibliotecas
+utilizadas que devem ser compiladas, bem como as informações de projeto
+presentes no Makefile, como ajustes de nomes de pastas e de flags de compilação
+quando aplicável. Este Makefile já vem com algumas opções prontas. São elas:
+
+\begin{itemize}
+  \item \textbf{make default} ou \textbf{make}: compila o programa
+  \item \textbf{make flash}: compila e grava o programa no microcontrolador
+  \item \textbf{make clean}: apaga todos os objetos compilados
+\end{itemize}
+
+Para executar as funções do Makefile, basta navegar até a pasta onde o arquivo
+está e executar os comandos oferecidos.
+
+Em computadores com sistema operacional Windows, é necessária a instalação de
+algum software Make, como o \dblquote{GNU Make for Windows}, bem como a adição
+do programa às variáveis de ambiente do sistema.
+
+É importante ressaltar que este SDK não oferece as bibliotecas de
+baixo nível para a operação do rádio e do bluetooth. Para a utilização do bluetooth, o
+fabricante oferece um arquivo pré compilado chamado SoftDevice, que deve ser
+gravado no microcontrolador junto com o programa da aplicação. O Makefile
+oferecido no template de projeto já prevê um comando para gravar o softdevice,
+através do comando \dblquote{\textbf{make flash\_softdevice}}. Neste projeto,
+utilizou-se o SoftDevice S130.
+
 % TODO focar no como
 % explicar o passo a passo melhor
-
-\subsubsubsection{Orientação a eventos}
- 
-
 
 \subsubsubsection{Arquitetura de Software}
 
