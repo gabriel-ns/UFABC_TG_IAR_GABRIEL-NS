@@ -1,6 +1,7 @@
 \section{Desenvolvimento}
 
 \subsection{Projeto}
+\label{subsection:projeto}
 Com a finalidade de oferecer uma referência de desenvolvimento de aplicações
 Bluetooth no contexto da Internet das Coisas, foi feito um projeto baseado em
 microcontroladores que implementa um dispositivo conectável e configurável via
@@ -87,9 +88,10 @@ todos os dispositivos.
 \ref{fig:bmp180breakout} é um sensor de pressão desenvolvido, produzido e vendido pela Bosch. É capaz de
 operar com tensões de 1.8V a 3.6V,consumindo uma corrente de 0.1$\mu A$ a 4$\mu
 A$ nas temperaturas de $25\,^{\circ}{\rm C}$ e $85\,^{\circ}{\rm C}$ respectivamente. 
-Durante a conversão dos valores de pressão, a corrente de pico varia entre 650$\mu A$ a 1000$\mu A$, e durante a operação a $25\,^{\circ}{\rm C}$ com frequência de amostragem de 1Hz, a
-corrente consumida fica entre 3$\mu A$ e 32$\mu A$ dependendo da resolução do
-configurada. \cite{BMP180Datasheet}
+Durante a conversão dos valores de pressão, a corrente de pico varia entre
+650$\mu A$ a 1000$\mu A$, e durante a operação a $25\,^{\circ}{\rm C}$ com
+frequência de amostragem de 1Hz, a corrente consumida fica entre 3$\mu A$ e
+32$\mu A$ dependendo da resolução do configurada.\cite{BMP180Datasheet}
 
 \begin{center}
 	\centering 
@@ -695,7 +697,7 @@ programação em nível mais alto.
 O projeto de firmware foi feito utilizando-se Makefile e o toolchain ARM-GCC,
 permitindo assim o desenvolvimento e compilação do projeto de forma
 independente de IDE. Há também a possibilidade de desenvolvimento com a IDE
-Keil, que é especifico para microcontroladores ARM. 
+Keil, que é especifica para microcontroladores ARM. 
 
 A IDE utilizada ao para o desenvolvimento foi o Eclipse IDE versão Oxygen. Além
 disso, foram necessárias as ferramentas NRFJPROG, software desenvolvido pelo
