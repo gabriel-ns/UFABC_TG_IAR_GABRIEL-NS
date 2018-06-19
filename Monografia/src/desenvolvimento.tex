@@ -770,8 +770,13 @@ utilizou-se o SoftDevice S130.
 
 \subsubsubsection{Arquitetura de Software}
 
+A etapa de elaboração de arquitetura foi desempenhada para permitir melhor
+organização, planejamento, atribuição de responsabilidades e testes das
+funcionalidades.
+Assim é possível ter uma visão do todo antes da implementação do software do dispositivo.
+
 A arquitetura de software segue o esquema presente na figura
-\ref{fig:architecture}.   
+\ref{fig:architecture}.
 
 \begin{center}
 	\centering 
@@ -780,6 +785,42 @@ A arquitetura de software segue o esquema presente na figura
 	\label{fig:architecture}
 \end{center} 
 
+Com exceção do componente \dblquote{NORDIC SDK}, todos os componentes de
+software foram implementados neste projeto, sendo cada um responsável por alguma
+tarefa específica.
+
+Os drivers para sensores são os componentes de software responsáveis por
+interagir com cada um dos sensores. Neles, estão as funcionalidades de enviar
+comandos ao sensor, realizar a leitura das informações do sensor e realizar os
+cálculos necessários para se obter o valor das variáveis medidas.
+
+Os quatro serviços indicados são os serviços descritos na seção
+\ref{subsection:projeto}. A implementação dos serviços é responsável tanto pela
+alocação das características dos serviços quanto pelo comportamento do
+dispositivo durante a conexão, escrita e leitura de serviços e streaming de
+dados para as notificações.
+
+%TODO sigla MSD
+O Advertising Controller é o elemento responsável construção do pacote de
+advertising, codificando do dados dos sensores no pacote, preenchendo os
+metadados do pacote como indicar a formatação MSD dos dados, indicação de
+advertising público e indicação de dispositivo conectável, bem como preencher os
+dados que serão transmitidos na solicitação do pacote Scan Response.
+
+O Sensor Controller é o elemento responsável por gerenciar todos os sensores por
+meio dos drivers disponíveis. As responsabilidades dele são solicitar as
+leituras de sensores periódicamente sendo que cada sensor possui uma
+configuração específica, configurar o sensor quando seu respectivo serviço
+bluetooth soliciar, processar os eventos de dados prontos dos sensores e
+disponibilizar para os outros módulos as medidas mais recentes feitas
+pelos sensores.
+
+%TODO sigla BLE, MAC
+O BLE Manager é o elemento responsável pela configuração dos elementos básicos
+de rádio, como endereço MAC, parâmetros de conexão, inicialização do protocolo e
+das funcionalidades de rádio, de instanciar os serviços e de distribuir os
+eventos de sensores e eventos do Bluetooth para os serviços e o Advertising
+Controller.
 
 \subsubsubsection{Operação dos sensores}
 
