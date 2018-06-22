@@ -1,35 +1,68 @@
 \section{Introdução}
 
+% O que é BLE
+
+% O que o BLE faz para ser Low Power
+
+% Parâmetros do BLE
+
+% Funcionamento fisico do BLE
+
+% Arquitetura do BLE: GAP, GATT, ETC
+
+% Camada mais baixa da aplicação: o GAP
+
+% Quatro roles do BLE
+
+% Aplicações do BLE
+
+O Bluetooth Low Energy, ou BLE, é uma das formas de operação previstas na
+especificação da versão 4.0 do Bluetooth. Junto com o BLE, o documento também
+especifica a operação do tipo Basic Rate, compatibilizando a versão 4.0 com as
+versões anteriores.
 
 
 % Descrição do meio físico
-O BLE opera na frequência de 2.4GHz utilizando 40 canais de 2MHz com frequências de centro de 2402MHz a 2480MHz. 
-Existem dois tipos de transmissão: a transmissão de dados, que é feita em 37 dos canais disponíveis com a capacidade 
-de transmissão de 1Mbit/s empregando a técnica de Frequency-Hopping Spread Spectrum para combater interferências, 
-alterando a todo instante a frequência da portadora numa sequência pseudoaleatória conhecida apenas entre o transmissor
-e receptor; e o Advertising, que é feito nos outros 3 canais restantes com as frequências de 2402MHz, 2426MHz e 2480MHz.
+O BLE opera na frequência de 2.4GHz utilizando 40 canais de 2MHz com
+frequências de centro de 2402MHz a 2480MHz.Existem dois tipos de transmissão: a
+transmissão de dados, que é feita em 37 dos canais disponíveis com a capacidade
+de transmissão de 1Mbit/s empregando a técnica de Frequency-Hopping Spread
+Spectrum para combater interferências, alterando a todo instante a frequência
+da portadora numa sequência pseudoaleatória conhecida apenas entre o
+transmissor e receptor; e o Advertising, que é feito nos outros 3 canais
+restantes com as frequências de 2402MHz, 2426MHz e 2480MHz.
 
-Advertising é a ação de transmitir pacotes de dados de forma pública para todos os dispositivos capazes de recebê-los, com a finalidade
-principal de indicar a presença do dispositivo no local.
-Os canais de Advertising possuem, frequências estratégicas para evitar interferências causadas pela coexistência do BLE com redes Wi-Fi.
+Advertising é a ação de transmitir pacotes de dados de forma pública para todos
+os dispositivos capazes de recebê-los, com a finalidade principal de indicar a
+presença do dispositivo no local.
+Os canais de Advertising possuem, frequências estratégicas para evitar
+interferências causadas pela coexistência do BLE com redes Wi-Fi.
 
 % Camadas e arquitetura do BLE
 
 % Descrição dos papéis
 
-No BLE os dispositivos podem assumir 4 funções diferentes. São elas: Broadcaster, Observer, Peripheral e Central.
+No BLE os dispositivos podem assumir 4 funções diferentes. São elas:
+Broadcaster, Observer, Peripheral e Central.
 
 %% definir GAP
-Na função de Broadcaster, o dispositivo opera apenas transmitindo pacotes de dados periodicamente utilizando o GAP. Estes pacotes
-de dados, além de indicar a presença do dispositivo, contém os dados que são formatados de acordo com as especificações do BLE.
+Na função de Broadcaster, o dispositivo opera apenas transmitindo pacotes de
+dados periodicamente utilizando o GAP. Estes pacotes de dados, além de indicar
+a presença do dispositivo, contém os dados que são formatados de acordo com as
+especificações do BLE.
 
-Já na função de Observer o dispositivo opera apenas lendo dados Nestas duas funções o fluxo de dados é unidirecional.
+Já na função de Observer o dispositivo opera apenas lendo dados Nestas duas
+funções o fluxo de dados é unidirecional.
 
-Na função de Peripheral o dispositivo é capaz de estabelecer conexões com outros dispositivos, porém operando num modo slave sendo controlado através de um dispositivo master. A quarta função é a central Bluetooth, que pode operar tanto com.
+Na função de Peripheral o dispositivo é capaz de estabelecer conexões com
+outros dispositivos, porém operando num modo slave sendo controlado através de
+um dispositivo master. A quarta função é a central Bluetooth, que pode operar tanto com.
 
 
-% O Bluetooth Low Energy, ou BLE, é uma das formas de operação previstas na especificação da versão 4.0 do Bluetooth. 
-% Junto com o BLE, o documento também especifica a operação do tipo Basic Rate, compatibilizando a versão 4.0 com as versões anteriores.	
+% O Bluetooth Low Energy, ou BLE, é uma das formas de operação previstas na
+% especificação da versão 4.0 do Bluetooth.
+% Junto com o BLE, o documento também especifica a operação do tipo Basic Rate,
+% compatibilizando a versão 4.0 com as versões anteriores.
 
 
 % Topologia:
