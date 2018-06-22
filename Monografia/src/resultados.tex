@@ -84,10 +84,55 @@ Tratando as unidades dos dados da tabela, os valores lidos dos sensores são:
 
 \subsubsection{Serviços Bluetooth}
 
+Ainda utilizando aplicativo nRF Connect, são testados os serviços Bluetooth
+presentes na estação de medidas.
+
+Para o teste dos serviços, é necessário realizar a conexão através do botão
+\dblquote{Connect}, que automaticamente abre uma aba referente ao dispositivo.
+Ao completar o processo de conexão, são listados todos os serviços do
+dispositivo, sendo os serviços padronizados pelo Bluetooth listados com seus
+nomes e os serviços customizados (como os deste trabalho) possuem o nome
+\dblquote{Unknown Service}, como mostra a figura \ref{fig:svc-view}.
+
+É possível ver também que no campo UUID está presente a sequência de bytes
+definida no código fonte \ref{lst:base_uuid} em conjunto com os identificadores
+de 2 bytes presentes nos códigos fonte \ref{lst:apss_uuid}, \ref{lst:thss_uuid}
+e \ref{lst:lss_uuid}, que ocupam as posições 2 e 3 da sequência de bytes,
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.4\linewidth]{svc-view.png}
+	\captionof{figure}{Lista de serviços Bluetooth presentes no dispositivo}
+	\label{fig:svc-view}
+\end{center} 
+
+
+Ao extender o serviço com UUID 0xABC1 (APSS), são listadas as características do
+serviço, como mostra a figura \ref{fig:svc-char-view}. As características com
+identificação. O UUID de cada característica é localizado nos bytes 2 e 3. As
+características com UUID 0x0A00, 0x0A01 e 0x0A02 (as de configuração) são
+mostradas com as propriedades \dblquote{READ} e \dblquote{WRITE}. Já a
+característica mostrada com UUID 0x0A03 possui as propriedades \dblquote{READ} e
+\dblquote{NOTIFY}, de acordo com o projeto do serviço.
+
+
+Realizando a leitura de todas as características, observa-se as configurações do
+sensor de pressão bem como a ultima leitura realizada como visto na figura
+\ref{fig:svc-char-read}. Ao ativar a notificação, as leituras de pressão são
+atualizadas automaticamente.
+
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.4\linewidth]{svc-char-read.png}
+	\captionof{figure}{Valores lidos das características}
+	\label{fig:svc-char-read}
+\end{center} 
+
 \subsection{Gateway Bluetooth - Internet}
 
 \subsubsection{Bluetooth Observer}
-
+ 
 %TODO MAC, RSSI
 O primeiro teste realizado sobre o funcionamento do Bluetooth Observer foi a
 obtenção de pacotes com envio das informações recebidas através da porta serial
