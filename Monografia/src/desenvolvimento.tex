@@ -502,14 +502,6 @@ sensor disponibiliza as leituras de luminosidade no espectro visível e
 luminosidade no espectro infravermelho. Este serviço possui 6 características:
 Sensing Interval; Sensor Status; Integration Time; Sensor Gain; Visible Lux
 Data e  Infrared Lux Data.
-% \begin{packed_itemize}
-%   \item Sensing Interval
-%   \item Sensor Status
-%   \item Integration Time
-%   \item Sensor Gain
-%   \item Visible Lux Data
-%   \item Infrared Lux Data
-% \end{packed_itemize}
 
 Os identificadores de 2 bytes do serviço e de cada característica estão
 definidos no Código Fonte \ref{lst:lss_uuid}. 
@@ -630,6 +622,73 @@ title=Luminosity Sensor Service]
 \newpage
 \subparagraph{Radio Parameters Configuration Service}(RPCS) 
 \newline
+O RPCS é o serviço de configuração dos parâmetros de operação do rádio,
+oferecendo a possibilidade de configurar o intervalo de transmissão de
+advertisings e a potência de transmissão do rádio. Este serviço possui 2
+características: Advertising Interval e Advertising TX Power.
+
+Os identificadores de 2 bytes do serviço e de cada característica estão
+definidos no Código Fonte \ref{lst:rpcs_uuid}. 
+
+\begin{minipage}{0.95\linewidth}
+\lstinputlisting[firstline=11,lastline=14,label={lst:rpcs_uuid},
+caption={UUID para o serviço RPCS e suas características}]
+{../Development/ble-sensor-station/src/libs/ble/services/rpcs/ble_rpcs.h}
+\end{minipage}
+
+% TODO define reference to adv interval
+Devido às especificações impostas pelo Bluetooh, o intervalo de advertising só
+pode ser configurado entre 20ms e 10240ms\cite{ble4core}. A característica que
+configura este parâmetro possui um tamanho de 2 bytes permite a leitura e
+escrita com autorização, que somente autoriza a escrita de valores válidos. Os
+valores escritos representam o intervalo em milisegundos, representados por uma
+variável do tipo \textbf{uint16\_t}.
+
+Já a configuração da potência do rádio só é capaz de receber as configurações
+permitidas pelo microcontrolador, que são: +4dB, 0dB, -4dB, -8dB, -12dB, -16dB e
+-20dB\cite{nRF51RefManual}. A característica que configura este parâmetro possui
+1 byte, seguindo o formato \textbf{int8\_t}, e permite a leitura e escrita com
+autorização, permitindo apenas a escrita de valores válidos. O valor escrito
+representa a potência de transmissão em decibels.
+
+A figura \ref{fig:resumo_rpcs} representa graficamente a construção do serviço
+Radio Parameters Configuration Service.
+
+\begin{tcolorbox}[arc=3mm,fontupper=\small,fonttitle=\bfseries,
+subtitle style={boxrule=0.4pt, colback=white},colframe=green!25!black,
+halign=center,bottom=0mm,
+title=Radio Parameter Configuration Service]
+	\setstretch{1.0}
+	UUID de 2 bytes do serviço: 0xABC4h
+	
+	\begin{tcbitemize}[raster columns=2,raster equal height,fontupper=\footnotesize,
+	colbacktitle=yellow!100!red!100!black, coltitle=black,
+	fonttitle=\footnotesize\bfseries,size=small, halign=center]
+	
+	\tcbitem [squeezed title={Advertising Interval Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0D00h \\ \hline
+		Tamanho & 4 bytes \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+		\tcbitem [squeezed title={Advertising TX Power Characteristic}]
+		\begin{tabular}{ r | l }
+		UUID & 0x0D01h \\ \hline
+		Tamanho & 1 byte \\ \hline
+		Leitura & Permitida \\ \hline
+		Escrita & Permitida com autorização \\ \hline
+		Notificação & Desabilitada 
+		\end{tabular}
+
+	\end{tcbitemize}
+	\tcblower
+	\captionof{figure}{Resumo da definição do serviço RPCS}
+	\label{fig:resumo_rpcs}
+\end{tcolorbox}
+
 
 %TODO
 
