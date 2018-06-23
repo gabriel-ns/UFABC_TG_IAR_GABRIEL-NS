@@ -2,6 +2,7 @@
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[final]{listings}
+% \usepackage{listings}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -28,10 +29,13 @@
 
 \renewcommand{\baselinestretch}{1.5} 
 
-\renewcommand{\lstlistingname}{Código Fonte}% Listing -> Algorithm
+\addto\captionsbrazil{%
+  \renewcommand*{\lstlistlistingname}{Lista de Códigos Fonte}% 
+  \renewcommand*{\lstlistingname}{Código Fonte} %
+}
 \definecolor{mygreen}{rgb}{0.0,0.4,0.0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
-\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{mymauve}{rgb}{0.58,0,0.82} 
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstset{ %
@@ -83,6 +87,8 @@
 CONECTADOS À NUVEM}
 \newcommand{\thedate}{2018}
 
+
+
 \begin{document}
 		
 	\include{src/capa}
@@ -96,6 +102,9 @@ CONECTADOS À NUVEM}
 	 
 	\newpage
 	\listoftables
+	
+	\newpage
+	\lstlistoflistings
 
 	\newpage
 	\tableofcontents
