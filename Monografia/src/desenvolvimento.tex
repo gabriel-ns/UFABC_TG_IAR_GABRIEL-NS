@@ -135,18 +135,6 @@ power down, o consumo de corrente varia entre 3.2$\mu A$ e 15$\mu A$. Possui
 uma resolução de 16 bits na saída do ADC que realiza as conversões nos
 fotodiodos. \cite{TSL2561Datasheet}
 
-% \begin{listing}
-% For 0 < CH1/CH0 ≤ 0.50
-% Lux = 0.0304 × CH0 - 0.062 × CH0 × ((CH1/CH0)1.4)
-% For 0.50 < CH1/CH0 ≤ 0.61
-% Lux = 0.0224 × CH0 - 0.031 × CH1
-% For 0.61 < CH1/CH0 ≤ 0.80
-% Lux = 0.0128 × CH0 - 0.0153 × CH1
-% For 0.80 < CH1/CH0 ≤ 1.30
-% Lux = 0.00146 × CH0 - 0.00112 × CH1
-% For CH1/CH0 > 1.30
-% Lux = 0
-% \end{listing}
 
 \subparagraph{HTU21D} O sensor HTU21D, presente na placa da figura
 \ref{fig:htu21breakout}, é um sensor de temperatura e umidade relativa do ar
@@ -191,23 +179,33 @@ permitindo que uma conexão seja estabelecida e que os serviços e
 características presentes sejam acessíveis.
 
 \subsubsubsection{Bluetooth Broadcaster} 
-No modo Broadcaster, o dispositivo transmite seu endereço MAC e a informação de
-que este aceita o estabelecimento de conexões com centrais BLE, que permite
-acesso aos serviços BLE que serão descritos posteriormente.
-Além disso, estão presentes nos pacotes transmitidos as leituras realizadas
-pelos sensores.
 
-As informações dos sensores são codificadas como payload do pacote seguindo a
-estrutura de dados no código fonte \ref{lst:struct_adv}. Como formato de
-payload, optou-se por utilizar o Manufacturer Specific Data, evitando assim
-possíveis conflitos com pacotes BLE definidos pela especificação.
+Por operar no modo Broadcaster e Slave, a estação de medidas deve informar em
+seus pacotes de Advertising que o dispositivo é conectável com centrais BLE,
+permitindo o acesso aos serviços que serão descritos posteriormente. 
+
+Além disso, no campo Payload do pacote transmitido através da ação de
+Advertising estarão presentes as informações medidas pelos sensores, seguindo a
+estrutura de dados no código fonte \ref{lst:struct_adv}. 
+
+Como formato de payload optou-se por utilizar o Manufacturer Specific Data,
+campo destinado para fabricantes desenvolverem seus próprios protocolos e
+codificações, evitando assim possíveis conflitos com pacotes BLE definidos pela
+especificação. Este formato possui um Data Type específico
+(0xFF)\cite{GAPDataTypes}, a identificação do fabricante definida pelo
+Bluetooth SIG, e os dados codificados.
+\cite{ble4sup}
 
 \lstinputlisting[firstline=11,lastline=18,label={lst:struct_adv},
 caption={Estrutura de dados para do pacote de leituras dos sensores}]
 {../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_frame.h}
 
-Os pacotes MSD são definidos na especificação suplementar, sendo o data type
-definido como  
+No pacote de Scan Response, a estação de medidas transmitirá o seu nome,
+utilizando o Data Type definido como Complete Local Name, com
+código 0x09\cite{GAPDataTypes}, sendo o nome do dispositivo definido como
+\dblquote{UFABC001}.
+
+
 
 % -> Utilização do msd
 % A transmissão dos pacotes de advertising são feitos através do formato de
@@ -303,7 +301,7 @@ para a escrita estão definidos pela enumeração do Código Fonte \ref{lst:bmp1
 
 \begin{minipage}{0.95\linewidth}
 \lstinputlisting[firstline=14,lastline=21,label={lst:bmp180_pwr_mode_t},
-caption={Enumeração dos modos de operação configuráveis para o sensor BMP180s}]
+caption={Enumeração dos modos de operação configuráveis para o sensor BMP180}]
 {../Development/ble-sensor-station/src/libs/sensing/bmp180_drv/bmp180_drv.h}
 \end{minipage}
 
@@ -409,7 +407,7 @@ especificações do serviço APSS.
 A característica Sensor Resolution é uma característica de 1 byte permite a
 configuração e leitura da resolução das medidas de temperatura e umidade. As
 resoluções das medidas são dependentes uma da outra, sendo as combinações
-definidas pelo fabricante. O código fonte \ref{lst:htu21d_resoluion_t} reflete
+definidas pelo fabricante. O código fonte \ref{lst:htu21d_resolution_t} reflete
 as opções de resolução oferecidas. Os números indicados na resolução
 representam o número de bits.
 
@@ -964,3 +962,5 @@ e chamadas de funções do SoftDevice.
 % -> Coleta e armazenamento de dados
 %end of infrastructure
 %end of implementation
+
+
