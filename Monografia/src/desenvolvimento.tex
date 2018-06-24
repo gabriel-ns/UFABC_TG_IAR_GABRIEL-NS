@@ -193,8 +193,9 @@ campo destinado para fabricantes desenvolverem seus próprios protocolos e
 codificações, evitando assim possíveis conflitos com pacotes BLE definidos pela
 especificação. Este formato possui um Data Type específico
 (0xFF)\cite{GAPDataTypes}, a identificação do fabricante definida pelo
-Bluetooth SIG, e os dados codificados.
-\cite{ble4sup}
+Bluetooth SIG, e os dados codificados \cite{ble4sup}. O Company ID escolhido
+para o projeto é o mesmo da fabricante do microcontrolador, a Nordic
+Semiconductor, que possui como registro o valor 0x0059\cite{bleCompanyIds}.
 
 \lstinputlisting[firstline=11,lastline=18,label={lst:struct_adv},
 caption={Estrutura de dados para do pacote de leituras dos sensores}]
@@ -205,14 +206,60 @@ utilizando o Data Type definido como Complete Local Name, com
 código 0x09\cite{GAPDataTypes}, sendo o nome do dispositivo definido como
 \dblquote{UFABC001}.
 
+Ainda nos dados do pacote, é incluído obrigatoriamente o campo de
+flags\cite{ble4core} que indicam com quais recursos do Bluetooth o dispositivo é
+compatível \cite{ble4sup}, com Data Type identificado pelo byte 0x01
+\cite{GAPDataTypes}.
+A estação de medidas deve suportar apenas o Bluetooth Low Energy, mas não o
+BR/EDR. Além disso, como o dispositivo será conectável enquanto estiver
+operando, a flag General Discoverable Mode deve ser habilitada. Com estas duas
+flags ativas, o campo Flags deverá conter o valor 0x06, de acordo com os bits
+definidos na especificação do campo.\cite{ble4sup}.
 
+Com todas as informações possuindo valores fixos, é possível definir a formação
+do pacote de advertising, como mostra a tabela \ref{tab:adv_template}. Na
+tabela, o valor final do campo Manufacturer Specific Data possui o seguinte
+significado: PP para os bytes das medidas de pressão, TT para os bytes das
+medidas de temperatura, HH para os bytes das medidas de umidade, VV para os
+bytes das medidas de luz visível e II para os bytes referentes a luz
+infravermelha. O tamanho do campo será dado pelo tamanho da estrutura de dados
+somados com 3 bytes, referentes ao Company ID e ao tipo de dado. Na formação do
+pacote, é importante notar que dentro do campo a ordem dos bytes e invertida,
+como se observa no campo Company ID que vale 0x0059\cite{bleCompanyIds} para a Nordic
+Semiconductor e no valor final passa a ser 0x5900.
 
-% -> Utilização do msd
-% A transmissão dos pacotes de advertising são feitos através do formato de
-% Manufacturer Specific Data, desta garante-se a compatibilidade dos pacotes
-% transmitidos por este dispositivo com a especificação sem causar erro
-% 
-% Codificação do pacote de advertising
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l|c|l|l|l|l|l|l|l|l|l|l|}
+\cline{2-12}
+                                               & \multicolumn{3}{c|}{Flags}                                                & \multicolumn{8}{c|}{Manufacturer Specific Data (MSD)}                                                         \\ \hline
+\multicolumn{1}{|l|}{\multirow{2}{*}{Formato}} & \multirow{2}{*}{Tam.}     & \multirow{2}{*}{Tipo} & \multirow{2}{*}{Dado} & \multirow{2}{*}{Tam.} & \multirow{2}{*}{Tipo} & \multicolumn{6}{c|}{Dados}                                    \\ \cline{7-12} 
+\multicolumn{1}{|l|}{}                         &                           &                       &                       &                       &                       & Company ID & pres    & temp    & hum     & vis\_lux & ir\_lux \\ \hline
+\multicolumn{1}{|l|}{Conteúdo}                 & \multicolumn{1}{l|}{0x02} & 0x01                  & 0x06                  & 0x13                  & 0xFF                  & 0x0059     & 4 bytes & 2 bytes & 2 bytes & 4 bytes  & 4 bytes \\ \hline
+\multicolumn{1}{|l|}{Valor final}              & \multicolumn{3}{c|}{0x020106}                                             & \multicolumn{8}{c|}{0x13FF5900PPPPPPPPTTTTHHHHVVVVVVVVIIIIIIII}                                               \\ \hline
+\multicolumn{1}{|l|}{Pacote Final}             & \multicolumn{11}{c|}{0x02010613FF5900PPPPPPPPTTTTHHHHVVVVVVVVIIIIIIII}                                                                                                                    \\ \hline
+\end{tabular}%
+}
+\caption{Formato do pacote de advertising}
+\label{tab:adv_template}
+\end{table}
+
+O pacote enviado pelo Scan Response possui tamanho e conteúdo fixo, sendo assim
+possível defini-lo, como mostra a tabela \ref{tab:scan_resp_template}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|}
+\cline{2-4}
+                                  & \multicolumn{3}{l|}{Complete Local Name}    \\ \hline
+\multicolumn{1}{|l|}{Formato}     & Tam.   & Tipo  & \multicolumn{1}{c|}{Dado}  \\ \hline
+\multicolumn{1}{|l|}{Conteúdo}    & 0x09   & 0x09  & 0x5546414243303031         \\ \hline
+\multicolumn{1}{|l|}{Valor final} & \multicolumn{3}{l|}{0x09095546414243303031} \\ \hline
+\end{tabular}
+\caption{Definição do pacote de Scan Response}
+\label{tab:scan_resp_template}
+\end{table}
 
 \subsubsubsection{Bluetooth Slave}
 No modo slave, o dispostivo possui um serviço Bluetooth para cada sensor, com
@@ -243,14 +290,6 @@ de pressão BMP180. Este sensor disponibiliza via Bluetooth as informações de
 pressão atmosférica e temperatura. Este serviço possui 5 características:
 Sensing Interval, Sensor Status, Sensor Resolution, Pressure Data, Temperature
 Data.
-
-% \begin{packed_itemize}
-%  	\item Sensing Interval
-%  	\item Sensor Status
-%  	\item Sensor Resolution
-%  	\item Pressure Data
-%  	\item Temperature Data.
-% \end{packed_itemize}
 
 Os identificadores de 2 bytes do serviço e de cada característica estão
 definidos no Código Fonte \ref{lst:apss_uuid}. 
