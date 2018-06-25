@@ -178,6 +178,16 @@ somente durante a configuração o dispositivo opera como um BLE Slave,
 permitindo que uma conexão seja estabelecida e que os serviços e
 características presentes sejam acessíveis.
 
+\subsubsubsection{Parâmetros Gerais de Operação do Bluetooth}
+
+%TODO
+PENDING
+%mac
+
+%parâmetros de conexão
+
+%device name
+
 \subsubsubsection{Bluetooth Broadcaster} 
 
 Por operar no modo Broadcaster e Slave, a estação de medidas deve informar em
@@ -766,13 +776,22 @@ que é oferecido como interface na infraestrutura online.
 %TODO SoC
 O hardware escolhido foi SoC ESP32, produzido pela Espressif Systems, que já possui
 comunicação via Wi-Fi e BLE integrado ao chip, sendo possível utilizar as duas funções
-simultaneamente.
+simultaneamente. A placa de desenvolvimento utilizada é a ESP32-DevKitC,
+mostrada na figura \ref{fig:nodemcu32}.\cite{ESP32Datasheet}
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.4\linewidth]{fig:nodemcu32.jpg}
+	\captionof{figure}{Placa de desenvolvimento ESP32-DevKitC}
+	\label{fig:nodemcu32}
+\end{center} 
 
 %TODO SDK, FREE RTOS
-O SDK do fabricante oferece exemplos de utilização do Bluetooth, Wi-Fi, e também disponibiliza
-de forma gratuita o sistema operacional Amazon FREE-RTOS, uma versão do FREE-RTOS customizada 
-pela Amazon, que amplia as funcionalidades com bibliotecas de software que auxiliam a conexão
-de sistemas embarcados com os serviços de nuvem AWS.
+O SDK do fabricante, chamado de ESP-IDF (Espressif IoT Development Framework),
+oferece exemplos de utilização do Bluetooth, Wi-Fi, e também disponibiliza de
+forma gratuita o sistema operacional Amazon FREE-RTOS, uma versão do FREE-RTOS
+customizada pela Amazon, que amplia as funcionalidades com bibliotecas de
+software que auxiliam a conexão de sistemas embarcados com os serviços de nuvem AWS.
 
 \subsubsubsection{Bluetooth Observer}
 
