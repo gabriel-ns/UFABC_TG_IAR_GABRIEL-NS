@@ -744,9 +744,6 @@ capaz também de processar e rotear os dados para outros serviços online.
 
 O AWS IoT Core oferece um dashboard online que permite a criação de dispositivos.
 
-
-
-\subsubsubsection{Armazenamento e Visualização}
 %end of infrastructure
 
 \subsubsection{Gateway Bluetooth - Internet}
@@ -982,21 +979,87 @@ O Advertising Controller, responsável pela operação do modo Broadcaster, poss
 dependências com as bibliotecas do SDK responsáveis pela codificação dos pacotes
 e chamadas de funções do SoftDevice.
 
-\subsubsubsection{Bluetooth Slave}
+Este controlador oferece interfaces, como mostra o código fonte
+\ref{lst:adv_ctrl_interface}, para as configurações do intervalo de transmissão
+e potência de rádio, bem como a interface que recebe os eventos de dados dos
+sensores, utilizado para atualizar o pacote de dados transmitido pelo
+dispositivo, além de oferecer as chamadas para a inicialização deste módulo.
 
-% Estratégia de firmware orientado a eventos
-% Linhas gerais sobre firmware para sensores
-% Serviços ble
-% ADV Encoder/decoder
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=13,lastline=20,label={lst:adv_ctrl_interface},
+caption={Interface do Advertising Controller}] 
+{../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_controller.h}
+\end{minipage}
+
+A inicialização deste componente de software configura as informações do pacote
+não relacionadas ao conteúdo. São estas configurações: intervalo padrão de
+advertising, duração do período conectável do dispositivo e advertising público
+e não direcionado. O SDK oferecido pela Nordic Semiconductor considera que
+quando o valor de Timeout para o período conctável é 0 o dispositivo permanecerá
+conectável durante todo o ciclo de operação\cite{nrf51sdkManual}. O código fonte
+\ref{lst:adv_ctrl_init} mostra a inicialização deste componente com intervalo de
+transmissão inicial de 200ms.
+
+As configurações referentes ao Device Name e MAC Address são definidas pelo
+bloco da arquitetura BLE Manager.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=71,lastline=82,label={lst:adv_ctrl_init},
+caption={Rotina de inicialização do Advertising Controller}]
+{../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_controller.c}
+\end{minipage}
+
+A função \dblquote{update\_adv\_data()} é responsável por preparar os dados do
+pacote de advertising e scan response, disponibilizando-os para as bibliotecas
+referentes à operação do rádio construirem o pacote bluetooth, como mostra o código fonte
+\ref{lst:adv_update_data}.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=102,lastline=122,label={lst:adv_update_data},
+caption={Preparação dos dados de Advertising e Scan Response}] 
+{../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_controller.c}
+\end{minipage}
+
+Os pacotes são contruídos de acordo com o projetado, sendo o pacote de
+advertising formado pelas flags que indicam operação somente no Bluetooth Low
+Energy (LE\_ONLY) e mantendo a flag de General Discovery Mode ativa
+(GENERAL\_DISC\_MODE), indicando que o dispositivo aceita conexões enquanto
+estiver operando. O pacote de advertising também recebe o endereço para a
+variável \dblquote{manuf\_data}, que contém o Company ID, o ponteiro para o
+pacote de dados para ser enviado e o tamanho deste pacote, que está de acordo
+com a tabela \ref{tab:adv_template}.
+
+Quando o Advertising Controller recebe um evento de dados dos sensores através
+da função \dblquote{adv\_on\_sensor\_evt} é executada a rotina presente no
+código fonte \ref{lst:adv_ctrl_sensor_evt}, atualizando os valores da estrutura
+de dados que armazena os dados para a codificação no pacote de advertising.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=48,lastline=68,label={lst:adv_ctrl_sensor_evt},
+caption={Rotina de atualização dos dados dos sensores}]
+{../Development/ble-sensor-station/src/libs/ble/advertising/ble_adv_controller.c}
+\end{minipage}
+
+As funções de configuração para intervalo de advertising, potência do rádio e de
+início/parada de advertising se resumem a chamadas das bibliotecas do SDK.
+
+\subsubsubsection{Bluetooth Slave}
+PENDING
+
+\subsubsubsection{BLE Manager}
+PENDING
 
 %End of Sensor Station
 
 \subsubsection{Gateway Bluetooth - Internet}
+PENDING
 % 			-> Hardware
 % 			-> Ambiente de desenvolvimento
 %end of BLE-Internet gateway
 
 \subsubsection{Infraestrutura online}
+
+PENDING
 % -> Ambiente de desenvolvimento	
 % -> Coleta e armazenamento de dados
 %end of infrastructure
