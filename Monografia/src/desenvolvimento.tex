@@ -180,13 +180,12 @@ características presentes sejam acessíveis.
 
 \subsubsubsection{Parâmetros Gerais de Operação do Bluetooth}
 
-%TODO
-PENDING
-%mac
-
-%parâmetros de conexão
-
-%device name
+Durante a operação, o dispositivo conterá um MAC Address do tipo Random Static
+Device Address, sendo a parte aleatória do endereço definida pelo número de série do
+microcontrolador. Para manter o endereço no tipo correto, é necessário garantir
+que os dois bits mais significativos estejam definidos como 1. Este tipo de
+endereço foi selecionado pois neste projeto não há um Identificador Único de
+Organização, obtido pela IEEE Registration Authority \cite{ble4core}
 
 \subsubsubsection{Bluetooth Broadcaster} 
 
@@ -683,7 +682,6 @@ caption={UUID para o serviço RPCS e suas características}]
 {../Development/ble-sensor-station/src/libs/ble/services/rpcs/ble_rpcs.h}
 \end{minipage}
 
-% TODO define reference to adv interval
 Devido às especificações impostas pelo Bluetooh, o intervalo de advertising só
 pode ser configurado entre 20ms e 10240ms\cite{ble4core}. A característica que
 configura este parâmetro possui um tamanho de 2 bytes permite a leitura e
@@ -736,17 +734,13 @@ title=Radio Parameter Configuration Service]
 	\label{fig:resumo_rpcs}
 \end{tcolorbox}
 
-
-%TODO
-
 %End of Sensor Station
 
 \subsubsection{Infraestrutura online}
 
 A infraestrutura online escolhida foi o AWS IoT Core, oferecido pela Amazon Web
 Services. O AWS IoT Core é uma plataforma que permite a conexão de dispositivos
-a aplicativos de nuvem que possui alta capacidade de tráfego de dados,
-suportando bilhões de dispositivos conectados e trilhões de mensagens, sendo
+a aplicativos de nuvem que possui alta capacidade de tráfego de dados, sendo
 capaz também de processar e rotear os dados para outros serviços online.
 \cite{AWS_IoTCore}
 
@@ -781,7 +775,7 @@ mostrada na figura \ref{fig:nodemcu32}.\cite{ESP32Datasheet}
 
 \begin{center}
 	\centering 
-	\includegraphics[width=0.4\linewidth]{fig:nodemcu32.jpg}
+	\includegraphics[width=0.8\linewidth]{nodemcu32.jpg}
 	\captionof{figure}{Placa de desenvolvimento ESP32-DevKitC}
 	\label{fig:nodemcu32}
 \end{center} 
@@ -789,20 +783,95 @@ mostrada na figura \ref{fig:nodemcu32}.\cite{ESP32Datasheet}
 %TODO SDK, FREE RTOS
 O SDK do fabricante, chamado de ESP-IDF (Espressif IoT Development Framework),
 oferece exemplos de utilização do Bluetooth, Wi-Fi, e também disponibiliza de
-forma gratuita o sistema operacional Amazon FREE-RTOS, uma versão do FREE-RTOS
-customizada pela Amazon, que amplia as funcionalidades com bibliotecas de
-software que auxiliam a conexão de sistemas embarcados com os serviços de nuvem AWS.
+forma gratuita o sistema operacional para sistemas embarcados Amazon FREE-RTOS,
+uma versão do FREE-RTOS customizada pela Amazon, que amplia as funcionalidades
+com bibliotecas de software que auxiliam a conexão de sistemas embarcados com
+os serviços de nuvem AWS.
+
+Além destas facilidades, este SoC foi selecionado pela sua disponibilidade no
+mercado a preços acessíveis e por tratar-se de um componente relativamente
+novo no mercado, sendo lançado somente em 2016\cite{ESP32Datasheet}. 
+
+Com a utilização do kit de desenvolvimento não há a necessidade de ligar nenhum
+outro componente ao ESP32.
 
 \subsubsubsection{Bluetooth Observer}
 
+O em relação ao Bluetooth, Gateway Bluetooth - Internet deverá operar o tempo
+todo como um Bluetooth Observer. A amostragem será em tempo integral, sem a
+utilização de janelamento.
+
+Ao detectar um pacote de Advertising é papel deste dispositivo detectar se a
+origem desse pacote é da Estação de Medidas desenvolvida neste trabalho, e esta
+detecção será feita através da identificação do pacote como Manufacturer
+Specific Data com o Company ID da Nordic Semiconductor. 
+
+Após identificado, o pacote deverá ser decodificado e organizado numa estrutura
+de dados que será disponibilizada para as funcionalidades de internet do
+dispositivo.
+
 \subsubsubsection{Conectividade}
-%end of BLE-Internet gateway
-%end of project
+
+Na parte de conectividade com a internet, o Gateway Bluetooth - Internet deve
+ser capaz de se conectar a uma rede Wi-Fi de 2.4GHz pré definida na compilação
+do código.
+
+Após a conexão, o dispositivo irá se conectar e autenticar de forma segura aos
+serviços da Amazon AWS, utilizando para isso uma chave privada e um certificado
+digital, ambos na armazenados memória não volátil do microcontrolador durante a
+gravação do programa. A chave privada e o certificado digital são utilizados
+para a comunicação criptografada entre o microcontrolador e os serviços
+online \cite{AWS_IoTCore}.
+
+%TODO mqtt
+Após conectado, o dispositivo enviará os dados dos sensores que foram obtidos
+através dos pacotes de advertising para o serviço Amazon AWS IoT Core através do
+protocolo MQTT.
+
 \subsection{Implementação}
 
 \subsubsection{Estação de Medidas Bluetooth Low Energy}
 
 \subsubsubsection{Hardware}
+
+Na montagem física deste projeto foi utilizado o kit de desenvolvimento
+comercializado online sob o nome BLE400, que é um kit de desenvolvimento para o
+microcontrolador deste projeto e oferece uma placa de circuito impresso
+montada com o microcontrolador e o circuito de rádio. Junto a essa placa, há uma
+segunda placa com um soquete para a placa com o circuito de rádio que oferece
+diversas conexões (SPI, I2C e UART), LEDs, botões, uma interface USB-Serial e
+uma interface para a gravação do microcontrolador. A figura \ref{fig:BLE400}
+mostra a foto do kit de desenvolvimento.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.6\linewidth]{BLE400.jpg}  
+	\captionof{figure}{Kit de Desenvolvimento BLE400}
+	\label{fig:BLE400}
+\end{center} 
+
+Junto a esse kit, foi montada uma outra placa de circuito, desta vez em placa
+padrão, que oferece uma conexão para as placas de desenvolvimento dos sensores
+mostradas na seção \ref{subsection:projeto}, como mostra a figura
+\ref{fig:custom_board}. Esta placa oferece um barramento I2C que se conecta ao
+barramento I2C oferecido pelo kit de desenvolvimento do microcontrolador.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.8\linewidth]{custom_pcb.jpeg}
+	\captionof{figure}{Placa padrão montada para o projeto}
+	\label{fig:custom_board}
+\end{center} 
+
+A figura \ref{fig:mounted_proj} mostra uma foto das duas placas conectadas.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.9\linewidth]{mounted.jpeg} 
+	\captionof{figure}{Placas do projeto montadas}
+	\label{fig:mounted_proj}
+\end{center} 
+
 
 \subsubsubsection{Ambiente de desenvolvimento}
 
@@ -846,7 +915,7 @@ caption={Lista dos arquivos de projeto para compilação}]
 caption={Flags de compilação comuns a todos os arquivos}] 
 {../Development/ble-sensor-station/Makefile}
 \end{minipage}
-
+ 
 %TODO definir SDK
 Os arquivos com o caminho iniciado com \dblquote{\$(PROJ\_DIR)} são referentes
 aos arquivos de projeto produzidos ao longo deste trabalho, enquanto os arquivos
@@ -1063,7 +1132,12 @@ As funções de configuração para intervalo de advertising, potência do rádi
 início/parada de advertising se resumem a chamadas das bibliotecas do SDK.
 
 \subsubsubsection{Bluetooth Slave}
-PENDING
+
+
+
+
+A operação no modo Bluetooth Slave ocorre principalmente através do tratamento
+de eventos ocorridos pela interação com o usuário.
 
 \subsubsubsection{BLE Manager}
 PENDING
@@ -1077,6 +1151,43 @@ PENDING
 %end of BLE-Internet gateway
 
 \subsubsection{Infraestrutura online}
+
+A infraestrutura online foi configurada utilizando a interface online do Amazon
+AWS IoT Core, que é disponibilizada após o cadastro na plataforma.
+
+As principais tarefas de desenvolvimento nessa interface são: a criação de um
+dispositivo, a criação dos certificados de segurança e a criação de políticas de
+acesso.
+
+Na figura \ref{fig:aws_creating_thing} é mostrada a interface utilizada para a
+criação de um dispositivo. Ao criá-lo, é possível escolher opções como nome
+e tipo de dispositivo. Ao final da criação, pede-se para associar o dispositivo
+criado a um certificado de segurança. Quando nenhum certificado é encontrado na
+conta do usuário, é oferecida a criação de um certificado em um clique.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.85\linewidth]{creating_thing.png}
+	\captionof{figure}{Interface online do AWS IoT Core para criação de
+	dispositivos}
+	\label{fig:aws_creating_thing}
+\end{center} 
+
+Quando um certificado é criado, abre-se uma página de download que permite a
+realização do download do certificado e das chaves de segurança utilizadas na
+criptografia. Quando um certificado é feito durante a criação de um dispositivo,
+eles são associados autimaticamente. Caso contrário, a associação deve ser feita
+manualmente. A figura \ref{fig:aws_cert_dl} mostra a página de download do
+certificado.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=0.85\linewidth]{cert-created.png}
+	\captionof{figure}{Página de criação do certificado}
+	\label{fig:aws_cert_dl}
+\end{center} 
+
+
 
 PENDING
 % -> Ambiente de desenvolvimento	
