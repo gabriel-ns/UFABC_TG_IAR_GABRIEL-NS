@@ -1164,14 +1164,53 @@ início/parada de advertising se resumem a chamadas das bibliotecas do SDK.
 
 \subsubsubsection{Bluetooth Slave}
 
-
-
-
 A operação no modo Bluetooth Slave ocorre principalmente através do tratamento
 de eventos ocorridos pela interação com o usuário.
 
 \subsubsubsection{BLE Manager}
-PENDING
+
+O BLE Manager é o componente de software responsável por definir e inicializar
+as configurações básicas do bluetooth. É nele que o MAC Address e o Device Name
+são configurados. Todos os componentes do bluetooth desenvolvidos neste projeto
+também são inicializados pelo BLE Manager, como mostra o código fonte
+\ref{lst:ble_manager_init}. Nota-se que as instâncias dos serviços são definidas
+como variáveis globais do BLE Manager, sendo acessível por todas as outras
+funções deste componente.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=53,lastline=71,label={lst:ble_manager_init},
+caption={Inicialização do BLE Manager}] 
+{../Development/ble-sensor-station/src/libs/ble/ble_manager.c}
+\end{minipage}
+
+
+
+Além disso, este componente faz inicializa e faz a interface
+com o SoftDevice, fazendo dele o responsável por receber os eventos relacionados
+a operação do bluetooth como a conexão e interação com serviços.
+
+Por ser responsável pelos eventos do bluetooth, o BLE Manager também distribui
+os eventos para os quatro serviços presentes no dispositivo, como mostra o
+código fonte \ref{lst:ble_evt_dispatch}.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=145,lastline=168,label={lst:ble_evt_dispatch},
+caption={Eventos do Bluetooth distribuido entre os componentes de
+software}] {../Development/ble-sensor-station/src/libs/ble/ble_manager.c}
+\end{minipage}
+
+
+Os eventos relacionados aos sensores também são comunicados ao BLE Manager, que
+os redireciona para todos os serviços e para o Advertising Controller para a
+atualização dos valores dos sensores, como mostra o codigo fonte
+\ref{lst:sensor_evt_dispatch}.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=73,lastline=80,label={lst:sensor_evt_dispatch},
+caption={Eventos dos sensores distribuido entre os componentes de
+software}] {../Development/ble-sensor-station/src/libs/ble/ble_manager.c}
+\end{minipage}
+
 
 %End of Sensor Station
 
