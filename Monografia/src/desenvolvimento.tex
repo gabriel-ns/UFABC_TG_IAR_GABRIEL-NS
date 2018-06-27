@@ -1013,6 +1013,33 @@ das funcionalidades de rádio, de instanciar os serviços e de distribuir os
 eventos de sensores e eventos do Bluetooth para os serviços e o Advertising
 Controller.
 
+No programa da Estação de Medidas, a função \dblquote{main} é responsável apenas
+por inicializar os componentes de software e manter o microcontrolador num loop
+de sleep, mantendo o dispositivo num estado de baixo consumo de energia. Na
+ocorrência de alguma interrupção, o microcontrolador é ligado novamente, a
+interrupção é processada e o programa volta ao loop de sleep, que o faz voltar
+para o estado de baixo consumo de energia sempre que o processamento da
+interrupção é concluído, como mostra o código fonte \ref{lst:main}
+
+\begin{minipage}{0.95\linewidth}  
+\lstinputlisting[firstline=110,lastline=145,label={lst:main},
+caption={Rotina principal do programa na
+função main()},basicstyle=\scriptsize\ttfamily]
+{../Development/ble-sensor-station/src/main.c}
+\end{minipage}
+
+No código fonte \ref{lst:main} também são utilizadas as bibliotecas Application
+Timer e ao Application Scheduler, ambas oferecidas pelo SDK utilizado. A
+biblioteca Application Timer é responsável por gerenciar o timer de 32 bits e
+utilizar um único timer presente em hardware para gerenciar um número maior de
+interrupções por timer através de software, sendo o número máximo de timers
+disponíveis em paralelo definido pela constante
+\dblquote{APP\_TIMER\_OP\_QUEUE\_SIZE} que vale 10 neste projeto. Já a
+biblitoeca Application Scheduler é responsável por armazenar uma lista de
+operações que devem ser executadas quando o microcontrolador é acordado,
+executando esta lista de tarefas de uma única vez, otimizando o uso do
+microcontrolador por diminuir o número de transições entre modo sleep e ativo.
+
 \subsubsubsection{Operação dos sensores}
 
 Toda operação de aquisição de dados ou de configuração realizada pelos sensores
@@ -1022,7 +1049,7 @@ código fonte \ref{lst:sensor_controller_interface} mostra a interface oferecida
 no arquivo \dblquote{sensor\_controller.h}.
  
 \begin{minipage}{0.95\linewidth} 
-\lstinputlisting[firstline=107,lastline=141,label={lst:sensor_controller_interface},
+\lstinputlisting[firstline=110,lastline=141,label={lst:sensor_controller_interface},
 caption={Interface criada para acesso aos
 sensores},basicstyle=\scriptsize\ttfamily]
 {../Development/ble-sensor-station/src/libs/sensing/sensor_controller.h}
