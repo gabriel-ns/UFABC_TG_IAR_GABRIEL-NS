@@ -1,0 +1,138 @@
+\section{Metodologia}
+
+A metodologia utilizada neste trabalho é uma proposta de metodologia de projeto
+para aplicações utilizando Bluetooth Low Energy. 
+
+Para exemplificar a utilização do método, o projeto feito é implementado numa
+plataforma de prototipagem para a validação da metodologia.
+
+\subsection{Projeto de aplicação com Bluetooth Low Energy}
+
+A primeira etapa do projeto do dispositivo BLE consiste na definição de todas
+tarefas que deverão ser realizadas pelo dispositivo. Definidas as tarefas, é
+escolhida uma técnica para a troca de informações com o dispositivo, isso
+implica em definir quais tarefas o dispositivo irá realizar como broadcaster,
+como slave, como scanner, como central e quais tarefas são independentes do
+bluetooth, como por exemplo acesso a senores ou atuadores.
+
+O projeto das tarefas relacionadas ao bluetooth pode ser feito sem especificar
+os componentes de hardware necessário, porém é interessante selecionar os
+componentes nesta etapa do projeto. Desta forma é possível saber de antemão
+quais são os recursos e informações que podem ser disponibilizados.
+
+Ao trabalhar com projetos que envolvem baixo consumo de energia ou projetos com
+energia limitada, o consumo energético dos componentes se torna uma
+característica importante, necessitando a análise dos datasheets de cada
+componente buscando sempre um consumo energético aceitável.
+
+Em relação ao bluetooth deve-se projetar cada forma de operação do dispositivo e
+os parâmetros comuns de operação.
+
+No projeto da operação como broadcaster deve-se definir como serão codificadas
+as informações atribuídas ao broadcaster nos pacotes de advertising. Além
+disso, a especificação suplementar especifica uma série de informações
+pré-definidas que podem ser transmitidas no mesmo pacote de advertising emitido
+pelo broadcaster\cite{ble4sup}. Pode ser necessária também a especificação do
+pacote de scan response, que deve seguir as mesmas especificações do
+advertising. Ao término desta definição, é possível prever quantos tipos
+diferentes de pacotes o dispositivo deverá transmitir.
+
+No projeto da operação como slave, deve-se definir todos os serviços bluetooth
+que o dispositivo deve oferecer, bem como as suas respectivas características. 
+No serviço, define-se o UUID único do serviço. Já para as características, é
+necessário definir o UUID, os tamanhos mínimos e máximos da característica em
+bytes, as permissões de leitura e escrita, o envio de notificações, o envio de
+alarmes e os descritores das características.
+
+No projeto da operação como observer, deve-se definir a janela de
+amostragem, o intervalo entre amostragens e quais são os pacotes que devem ser
+processados pelo dispositivo.
+
+No projeto da operação como central, deve-se definir quais são os dispositivos
+alvo da conexão, quais são os serviços e caracteríticas que o dispositivo deve
+acessar, ler e escrever, bem como definir quais são os dados escritos. É
+importante notar que para operar como central o dispositivo também deve operar
+como observer com a finalidade de identificar os dispositivos alvo. É
+necessário também saber quais são os serviços disponíveis nos dispositivos alvo.
+
+Pode ser necessária uma ou mais iterações entre as etapas de projeto com a
+finalidade compatibilizar todos os elementos do projeto.
+
+\subsection{Implementação e verificação do projeto}
+
+A implementação do dispositivo se deu através da construção do hardware
+necessário para a integração dos componentes e da elaboração do software
+embarcado responsável pelo gerenciamento dos sensores e de todas as operações
+realizadas pelo bluetooth, e pela verificação das funcionalidades do
+dispositivo.
+
+\subsubsection{Montagem do Hardware}
+\subparagraph{Material Utilizado}
+
+\begin{itemize}[noitemsep]
+  \item Kit de desenvolvimento BLE400 para nRF51822
+  \item Kit de desenvolvimento ESP32-DevKitC para ESP32
+  \item Breakout Board do sensor BMP180
+  \item Breakout Board do sensor HTU21D
+  \item Breakout Board do sensor TSL2561
+  \item Gravador OB JLink V8
+  \item Placa padrão
+  \item Estanho para solda liga 60\%Sn/40\%Pb
+\end{itemize}
+
+A construção do hardware ocorreu nas seguintes etapas: compra dos
+componentes, definição dos pinos da comunicação entre os componentes e soldagem
+dos componentes em placa padrão com conectores para efetuar as ligações.
+
+
+\subsection{Elaboração do Software Embarcado}
+
+\subparagraph{Material Utilizado}
+\begin{itemize}[noitemsep]
+  \item Software Eclipse IDE versão Oxygen
+  \item NRF5 Software Development Kit versão 12.3
+  \item Espressif IoT Development Framework versão 3.1
+  \item Serviço em núvem Amazon AWS IoT Core
+  \item Make
+  \item GNU Arm Embedded Toolchain versão 6.3.1
+  \item Ferramenta NRFJPROG versão 9.7.2
+  \item SEGGER JLink Software versão 6.12f
+\end{itemize}
+
+A elaboração do software embarcado se deu nas seguintes etapas: teste do
+ambiente de desenvolvimento com os exemplos do fabricante da plataforma,
+definição dos componentes de software e arquitetura, elaboração e testes das
+bibliotecas de acesso aos sensores em linguagem C com base nos datasheets dos
+componentes, elaboração dos demais componentes de software em linguagem C e
+integração de todos os programas desenvolvidos.
+
+\subsection{Verificação das Funcionalidades}
+
+\subparagraph{Material Utilizado}
+\begin{itemize}[noitemsep]
+  \item Aplicativo para smartphone Android nRF Connect versão 4.19.1
+  \item Software para terminal serial Minicom versão 2.7 para sistema
+  operacional Linux
+  \item Navegador de internet Mozilla Firefox versão 58.0.2
+  \item Osciloscópio TEKTRONIX MDO-3104
+  \item Medidor de corrente EE-QUIPMENT EE-203
+\end{itemize}
+
+Através do aplicativo nRF Connect foi possível testar as funcionalidades
+relacionadas ao bluetooth broadcaster, observando e analisando os pacotes de
+advertisement enviados, e ao bluetooth slave, estabelecendo a conexão,
+realizando a leitura dos sensores, habilitando o streaming de dados e testando
+novas configurações no dispositivo.
+
+As funcionalidades do bluetooth observer foram testadas através do terminal
+serial, enviando os pacotes recebidos através da porta UART para um computador
+que mostra as mensagens recebidas.
+
+O envio de mensagens para a internet foi testado através do dashboard online
+oferecido pela Amazon AWS que permite o monitoramento do projeto através do
+navegador de internet.
+
+Também foram realizados testes de performance energética no dispositivo através
+de um medidor de corrente do tipo shunt alimentando a placa, com a leitura do
+medidor ligada a um osciloscópio digital.
+
