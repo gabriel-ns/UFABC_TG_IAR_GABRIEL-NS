@@ -18,6 +18,26 @@
 \usepackage{color}
 \usepackage[all]{tcolorbox}
 \usepackage{setspace}
+\usepackage{enumitem}
+\usepackage[acronym]{glossaries}
+\usepackage{longtable}
+\usepackage{nomencl}
+\makenomenclature
+
+%% This removes the main title:
+\renewcommand{\nomname}{}
+%% this modifies item separation:
+\setlength{\nomitemsep}{8pt}
+%% this part defines the groups:
+%----------------------------------------------
+\usepackage{etoolbox}
+\renewcommand\nomgroup[1]{%
+  \item[\Large\bfseries
+  \ifstrequal{#1}{N}{Nomenclaturas}{%
+  \ifstrequal{#1}{A}{Lista de Abreviações}{}}%
+]\vspace{10pt}} % this is to add vertical space between the groups.
+%----------------------------------------------
+
 
 \newenvironment{packed_itemize}{
 \begin{itemize}
@@ -88,8 +108,6 @@
 CONECTADOS À NUVEM}
 \newcommand{\thedate}{2018}
 
-
-
 \begin{document}
 		
 	\include{src/capa}
@@ -106,6 +124,10 @@ CONECTADOS À NUVEM}
 	
 	\newpage
 	\lstlistoflistings
+	
+	\newpage
+	\include{src/abreviacoes}
+	\printnomenclature[2cm]  
 
 	\newpage
 	\tableofcontents
@@ -114,9 +136,13 @@ CONECTADOS À NUVEM}
 	
 	\include{src/objetivos}
 	
+	\include{src/metodologia}
+	
 	\include{src/desenvolvimento}
 	
 	\include{src/resultados}
+	
+	\include{src/conclusoes}
 	
 	\bibliographystyle{ieeetr}
 	
