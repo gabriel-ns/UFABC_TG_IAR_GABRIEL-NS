@@ -1164,8 +1164,63 @@ início/parada de advertising se resumem a chamadas das bibliotecas do SDK.
 
 \subsubsubsection{Bluetooth Slave}
 
-A operação no modo Bluetooth Slave ocorre principalmente através do tratamento
-de eventos ocorridos pela interação com o usuário.
+A operação no modo bluetooth slave é composta pelos 4 serviços oferecidos pelo
+dispositivo. Os serviços operam somente durante a conexão, e possuem interfaces
+para a inicialização dos serviços, para os eventos do bluetooth e para os
+eventos dos sensores, com exceção do serviço RPCS que não é associado a
+sensores.
+
+Durante a inicialização de um serviço são atribuídas as informações básicas
+referentes ao mesmo, como o UUID e suas características, além de configurar os
+endereços de memória onde ficam armazenados os valores lidos pelos sensores. Os
+valores lidos são atualizados pelo Sensor Controller, como mostra o código fonte
+\ref{lst:lss_init} na inicialização do serviço LSS. Na inicialização das
+características são definidos todos os parâmetros dela, como tamanho, acesso a
+leitura e escrita, UUID, etc.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=138,lastline=168,label={lst:lss_init},
+caption={Inicialização do serviço LSS}] 
+{../Development/ble-sensor-station/src/libs/ble/services/lss/ble_lss.c}
+\end{minipage}
+
+Durante os eventos de leitura de características, não há intervenção do programa
+da aplicação na leitura, sendo o SoftDevice responsável pelo envio dos dados. Já
+para a escrita, é necessária a validação do valor definido, e em caso de valor
+inválido a escrita é negada e um erro é comunicado a central BLE. O código fonte
+\ref{lst:lss_on_write} mostra o procedimento de tentativa de escrita. Caso a
+função \dblquote{sensor\_ctrl\_set\_tsl\_gain} apresente um valor incompatível
+com a definição do tipo \dblquote{tsl\_gain\_t}, mostrada no código fonte
+\ref{lst:tsl2561_gain_t}, é informado um código de erro, que é verificado na
+elaboração da resposta para a central.
+
+\begin{minipage}{0.95\linewidth}  
+\lstinputlisting[firstline=253,lastline=275,label={lst:lss_on_write},
+caption={Tentativa de escrita na caracterítica Sensor Gain do serviço LSS}] 
+{../Development/ble-sensor-station/src/libs/ble/services/lss/ble_lss.c}
+\end{minipage}
+
+Durante os eventos de sensores, é chamada a função responsável por
+tratar este tipo de evento. Quando esta função é chamada, como mostra o código
+fonte \ref{lst:lss_on_sensor_evt}, é necessário realizar a verificação da
+conexão bluetooth e se o evento se originou no sensor referente ao serviço, que
+no caso é o LSS.
+
+\begin{minipage}{0.95\linewidth}  
+\lstinputlisting[firstline=129,lastline=137,label={lst:lss_on_sensor_evt},
+caption={Evento de sensores no serviço LSS}] 
+{../Development/ble-sensor-station/src/libs/ble/services/lss/ble_lss.c}
+\end{minipage}
+
+Já a notificação é executada pelo SoftDevice, porém a ordem vem da aplicação.
+Além de ordenar a execução, a aplicação é responsável por definir os valores e o
+tamanho dos dados, como mostra o código fonte \ref{lst:lss_on_notify}
+
+\begin{minipage}{0.95\linewidth}  
+\lstinputlisting[firstline=315,lastline=339,label={lst:lss_on_notify},
+caption={Notificação da leitura do sensor de luminosidade}]  
+{../Development/ble-sensor-station/src/libs/ble/services/lss/ble_lss.c}
+\end{minipage}
 
 \subsubsubsection{BLE Manager}
 
@@ -1257,12 +1312,5 @@ certificado.
 	\label{fig:aws_cert_dl}
 \end{center} 
 
-
-
-PENDING
-% -> Ambiente de desenvolvimento	
-% -> Coleta e armazenamento de dados
-%end of infrastructure
-%end of implementation
 
 
