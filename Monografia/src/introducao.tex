@@ -1,12 +1,21 @@
 \section{Introdução}
 
 % Bluetooth Overview
+Bluetooth é uma tecnologia de comunicação sem fio de curto alcance desenvolvida
+pelo BLuetooth Special Interest Group, também conhecido como Bluetooth SIG. Esta
+tecnologia está presente em uma vasta gama de dispositivos, sendo utilizada em
+smartphones, computadores, automóveis, tablets entre
+outros\cite{gomez2012overview}.
 
-% O que é BLE
+O Bluetooth Low Energy, ou BLE, é uma das formas de operação previstas na
+especificação da versão 4.0 do Bluetooth. Junto com o BLE, o documento também
+especifica a operação do tipo Basic Rate, também chamado de BR, dando
+continuidade as formas de operação definidas nas versões anteriores do bluetooth.\cite{ble4core}.
+Um dispositivo bluetooth pode operar na forma Single Mode, sendo compatível
+apenas com BLE, ou na forma Dual Mode, sendo compatível com as duas
+formas de operação. \cite{ble4core}.
 
 % O que o BLE faz para ser Low Power
-
-% Parâmetros do BLE
 
 % Descrição do meio físico
 O BLE opera na frequência de 2.4GHz utilizando 40 canais de 2MHz com
@@ -21,27 +30,33 @@ utilizados pelo BLE com suas respectivas identificações e finalidades.
 \begin{center}
 	\centering 
 	\includegraphics[width=0.8\linewidth]{adv_ch_map.png}
-	\captionof{table}{Mapeamento dos canais de RF para os canais do BLE}
+	\captionof{table}{Mapeamento dos canais de RF para os canais do BLE \cite{ble4core}}
 	\label{tab:adv_channel_list}
 \end{center} 
-
+ 
 Advertising é a ação de transmitir pacotes de dados de forma pública para todos
 os dispositivos capazes de recebê-los, com a finalidade principal de indicar a
-presença do dispositivo no local.
+presença do dispositivo no local \cite{ble4core}.
 
-Os canais de Advertising possuem, frequências estratégicas para evitar
-interferências causadas pela coexistência do BLE com redes Wi-Fi, como 
-mostra a figura \ref{fig:wifi_coexist}
+% Os canais de Advertising possuem, frequências estratégicas para evitar
+% interferências causadas pela coexistência do BLE com redes Wi-Fi, como 
+% mostra a figura \ref{fig:wifi_coexist}
+% 
+% \begin{center}
+% 	\centering 
+% 	\includegraphics[width=0.85\linewidth]{ble-advertising-channels-spectrum.png}
+% 	\captionof{figure}{Coexistência entre BLE e Wi-Fi}
+% 	\label{fig:wifi_coexist}
+% \end{center} 
+% 
+% 
 
-\begin{center}
-	\centering 
-	\includegraphics[width=0.6\linewidth]{ble-advertising-channels-spectrum.png}
-	\captionof{table}{Coexistência entre BLE e Wi-Fi}
-	\label{tab:adv_channel_list}
-\end{center} 
+Um dispositivo BLE pode possuir 4 formas distintas de operação
 
 % GAP
     %Profiles
+    
+    
 
 Na função de Broadcaster, o dispositivo opera apenas transmitindo pacotes de dados periodicamente nos três canais de advertising. 
 Estes pacotes de dados, além de indicar a presença do dispositivo, contém os dados que são formatados de acordo com as especificações do BLE. 
@@ -57,16 +72,14 @@ um dispositivo master. A quarta função é a central Bluetooth, que pode operar
 
     % Serviços e caracteríscas
 
-    %address
+    % tipos de mac: vol 6 part B 1.3.2
+No BLE os dispositivos são identificados através do Device Address, ou Endereço
+do Dispositivo, que possui 48 bits. O endereço do dispositivo também é chamado
+de MAC Address. Existem dois tipos de endereço: o endereço público e o
+aleatório.
+
 
 % Link layer
-
-% Aplicações do BLE
-
-O Bluetooth Low Energy, ou BLE, é uma das formas de operação previstas na
-especificação da versão 4.0 do Bluetooth. Junto com o BLE, o documento também
-especifica a operação do tipo Basic Rate, compatibilizando a versão 4.0 com as
-versões anteriores.
 
 %% definir GAP
 

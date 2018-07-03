@@ -63,19 +63,17 @@ pela Nordic Semiconductor. Este SoC conta com um processador ARM Cortex M0 de 32
 bits e com um transceiver de 2.4GHz multiprotocolo, sendo capaz de operar com
 os protocolos Bluetooth e ANT.\cite{nRF51ProdSpec}
 
-Com o processador desligado e mantendo a memória RAM, o microcontrolador consome
-uma corrente de 3.8$\mu A$,
-
-A plataforma escolhida leva em consideração as especificações energéticas do
+A plataforma escolhida leva em consideração as especificações energéticas do 
 SoC, que é capaz de consumir uma corrente de 3.8$\mu A$ com o processador
 desligado mantendo a memória RAM\cite{nRF51ProdSpec}, a possibilidade de
 depuração do código desenvolvido, a versatilidade de operar tanto a aplicação
-quanto o bluetooth dentro do mesmo chip e a disponibilidade do componente para o uso.
+quanto o bluetooth dentro do mesmo chip e a disponibilidade do componente a um
+custo acessível.
 
 Já os sensores escolhidos para o projeto são:
 \begin{itemize} 
   \item BMP180: Sensor de pressão
-  \item TSL2561: Sensor de luminosidade
+  \item TSL2561: Sensor de luminosidade 
   \item HTU21D: Sensor de temperatura e umidade
 \end{itemize}
 
@@ -744,9 +742,18 @@ a aplicativos de nuvem que possui alta capacidade de tráfego de dados, sendo
 capaz também de processar e rotear os dados para outros serviços online.
 \cite{AWS_IoTCore}
 
-\subsubsubsection{Serviço para recepção de mensagens}
+A Amazon AWS também oferece uma série de bibliotecas para sistemas embarcados,
+que são responsáveis pela comunicação com os serviços web e pela comunicação
+segura entre os dispositivos e os servidores, sendo um difirencial para a
+escolha de plataforma web.
 
-O AWS IoT Core oferece um dashboard online que permite a criação de dispositivos.
+As informações transmitidas pelos sensores são recebidas no AWS IoT Core pelo
+protocolo MQTT, sob o tópico nomeado \dblquote{sensor\_data}. As mensagens
+recebidas podem são visualizadas através da interface web oferecida pelo
+serviço.
+
+Neste projeto, as mensagens recebidas não são roteadas para bancos de dados ou
+outras soluções em nuvem.
 
 %end of infrastructure
 
@@ -770,8 +777,9 @@ que é oferecido como interface na infraestrutura online.
 %TODO SoC
 O hardware escolhido foi SoC ESP32, produzido pela Espressif Systems, que já possui
 comunicação via Wi-Fi e BLE integrado ao chip, sendo possível utilizar as duas funções
-simultaneamente. A placa de desenvolvimento utilizada é a ESP32-DevKitC,
-mostrada na figura \ref{fig:nodemcu32}.\cite{ESP32Datasheet}
+simultaneamente. Além disso, este SoC possui um processador Xtensa LX6 de dois
+núcleos. A placa de desenvolvimento utilizada é a ESP32-DevKitC, mostrada na
+figura \ref{fig:nodemcu32}.\cite{ESP32Datasheet}
 
 \begin{center}
 	\centering 
@@ -780,17 +788,16 @@ mostrada na figura \ref{fig:nodemcu32}.\cite{ESP32Datasheet}
 	\label{fig:nodemcu32}
 \end{center} 
 
-%TODO SDK, FREE RTOS
-O SDK do fabricante, chamado de ESP-IDF (Espressif IoT Development Framework),
-oferece exemplos de utilização do Bluetooth, Wi-Fi, e também disponibiliza de
-forma gratuita o sistema operacional para sistemas embarcados Amazon FREE-RTOS,
-uma versão do FREE-RTOS customizada pela Amazon, que amplia as funcionalidades
-com bibliotecas de software que auxiliam a conexão de sistemas embarcados com
-os serviços de nuvem AWS.
-
 Além destas facilidades, este SoC foi selecionado pela sua disponibilidade no
 mercado a preços acessíveis e por tratar-se de um componente relativamente
 novo no mercado, sendo lançado somente em 2016\cite{ESP32Datasheet}. 
+
+Diferentemente do caso da estação de medidas, este gateway permancerá com o WiFi
+e bluetooth ativados o tempo todo. Isso implica num consumo de corrente variando
+de 50mA a 190mA com uma alimentação de 3V\cite{ESP32Datasheet}, portanto seu
+regime de operação combinado a sua performance energética inviabilizam a
+operação do dispositivo através de baterias. Este dispositivo utilizará uma
+fonte conectada a um computador ou tomada para a operação.
 
 Com a utilização do kit de desenvolvimento não há a necessidade de ligar nenhum
 outro componente ao ESP32.
@@ -823,10 +830,11 @@ gravação do programa. A chave privada e o certificado digital são utilizados
 para a comunicação criptografada entre o microcontrolador e os serviços
 online \cite{AWS_IoTCore}.
 
-%TODO mqtt
+%TODO mqtt, json
 Após conectado, o dispositivo enviará os dados dos sensores que foram obtidos
 através dos pacotes de advertising para o serviço Amazon AWS IoT Core através do
-protocolo MQTT.
+protocolo MQTT. A mensagem é enviada no endereço \dblquote{sensor\_data}
+utilizando o formato JSON.
 
 \subsection{Implementação}
 
@@ -875,65 +883,92 @@ A figura \ref{fig:mounted_proj} mostra uma foto das duas placas conectadas.
 
 \subsubsubsection{Ambiente de desenvolvimento}
 
-O ambiente de desenvolvimento foi baseado no Software Development Kit oferecido
-pelo fabricante do microcontrolador, o nRF5 SDK 12.3. Este SDK acelera o
-desenvolvimento do projeto por diminuir a necessidade de acesso direto aos
-registradores do microcontrolador para a operação de hardware, permitindo uma
-programação em nível mais alto.
- 
-O projeto de firmware foi feito utilizando-se Makefile e o toolchain ARM-GCC,
-permitindo assim o desenvolvimento e compilação do projeto de forma
-independente de IDE e de forma totalmente gratuita sem limitações quanto ao
-tamanho do arquivo gerado ou número de linhas e arquivos de projeto.
-Há também a possibilidade de desenvolvimento com a
-IDE Keil, que é especifica para microcontroladores ARM.
+O ambiente de desenvolvimento foi baseado em ferramentas gratuitas e sem
+limitações de tamanho de arquivos ou tamanho de código fonte. Este ambiente foi
+dividido em três partes: as ferramentas de edição de código fonte, o framework
+utilizado e as ferramentas de compilação e depuração do programa.
 
-A IDE utilizada ao para o desenvolvimento foi o Eclipse IDE versão Oxygen. Além
-disso, foram necessárias as ferramentas NRFJPROG, software desenvolvido pelo
-fabricante do microcontrolador para realizar tarefas como gravação, leitura,
-apagar memória, etc., e a ferramenta Segger J-Link, como interface entre o
-computador e o microcontrolador para as operações do NRFJPROG e para a
-depuração do firmware. A Nordic Semiconductor oferece em seu site de suporte para desenvolvedores 
-instruções para replicar este ambiente de desenvolvimento
-\cite{devzoneGccEclipse}. Para a gravação, há também a opção de se utilizar o
+Para a compilação e depuração do programa, foi utilizado a toolchain ARM GCC,
+que é formada pelo compilador GCC para processadores embarcados ARM das famílias
+ARM Cortex-M e ARM Cortex-R, as bibliotecas que operam as funcionalidades de
+baixo nível dos processadores e as ferramentas de depuração. Essa toolchain é
+utilizada em conjunto com Makefile, software utilizado para a automação dos
+processos de compilação de software. Este conjunto de ferramentas gratuitas
+possibilita que o código fonte seja compilado através da linha de comando,
+dispensando a obrigatoriedade de softwares de ambiente desenvolvimento
+integrado.
+
+O framework de trabalho é composto pelo conjunto de códigos fonte responsáveis
+por oferecer uma interface de alto nível das funcionalidades oferecidas pelo
+microcontrolador, dispensando assim a necessidade de se elaborar o software
+diretamente responsável pelas escritas nos registradores do chip. Por exemplo,
+ao se utilizar o barramento I2C do microcontrolador não é necessário verificar
+no datasheet todos os registradores que devem ser configurados e seus
+respectivos bits, basta utilizar as interfaces deixadas pelo framework. Utilizar
+este tipo de recurso acelera o desenvolvimento do software como um todo.
+
+Neste trabalho, o framework utilizado é o Software Development Kit, ou SDK,
+oferecido pelo fabricante do microcontrolador, o nRF5 SDK 12.3, que além de
+oferecer os códigos fonte para a operação de baixo nível do microcontrolador,
+oferece também diversos exemplos de operação dos periféricos e um template de
+projeto para diversos ambientes de desenvolvimento, e para o caso do ambiente
+escolhido é oferecido um Makefile base para o projeto.
+
+Já para a edição do código fonte, foi utilizado o ambiente de desenvolvimento
+integrado Eclipse IDE versão Oxygen. Além de oferecer as ferramentas de edição
+de texto este software é capaz de se integrar com a execução dos comandos de
+compilação através do makefile e com as ferramentas de depuração oferecidas pelo
+depurador, sendo possível executar o programa linha a linha.
+
+Além das ferramentas de desenvolvimento, são necessáras também as ferramentas
+utilizadas para a conexão deste ambiente com o hardware. A integração com o
+microcontrolador utiliza o software NRFJPROG versão 9.7.2, desenvolvido pela
+Nordic Semiconductor, fabricante do microcontrolador, que oferece uma interface
+para realizar as tarefas de gravação, leitura, apagar memória entre outros
+comandos que podem ser enviados diretamente. Esta ferramenta possui como
+dependência o software Segger J-Link, que é responsável pela comunicação direta
+com o microcontrolador através do hardware também chamado J-Link.
+%TODO: Foto do jlink
+
+Para a gravação, há também a opção de se utilizar o
 software nFR GO Studio, também desenvolvido e distribuido pela Nordic
-Semiconductor.
+Semiconductor, que oferece uma interace gráfica para a utilização dos
+recursos oferecidos pelo NRFJPROG.
 
-A vantagem da utilização das ferramentas NRFJPROG em conjunto com o J-Link e o
-Eclipse é a possibilidade de depuração do código.
+A Nordic Semiconductor oferece em seu site de suporte para desenvolvedores 
+instruções para replicar este ambiente de desenvolvimento
+\cite{devzoneGccEclipse}. 
 
-O makefile é o arquivo destinado a automação da compilação de todos os
-componentes de software envolvidos no projeto. Nele foram definidos todos os
-arquivos que são compilados no projeto, como mostra o código fonte
-\ref{lst:make_proj_files}, bem como todas as instruções dadas ao compilador no
-formato de flags de compilação, como mostra o código fonte \ref{lst:make_flags}
+Há também outras opções de ambientes de desenvolvimento para esta plataforma.
+Além deste ambiente descrito, é possível utilizar outras ferramentas que tem o
+mesmo papel. O próprio SDK oferecido disponibiliza seus exemplos também para os
+ambientes integrados de desenvolvimento Keil, $\mu$Vision e IAR Embedded
+Workbench. 
 
-\begin{minipage}{0.95\linewidth} 
+Para cada arquivo de código fonte criado no projeto é necessária a adição do
+mesno ao Makefile manualmente, como mostra o código fonte
+\ref{lst:make_proj_files}.
+
+\begin{minipage}{0.95\linewidth}
 \lstinputlisting[firstline=11,lastline=25,label={lst:make_proj_files},
-caption={Lista dos arquivos de projeto para compilação}] 
+caption={Lista dos arquivos de projeto para compilação}]
 {../Development/ble-sensor-station/Makefile}
 \end{minipage}
 
-\begin{minipage}{0.95\linewidth} 
-\lstinputlisting[firstline=115,lastline=133,label={lst:make_flags},
-caption={Flags de compilação comuns a todos os arquivos}] 
-{../Development/ble-sensor-station/Makefile}
-\end{minipage}
- 
 %TODO definir SDK
 Os arquivos com o caminho iniciado com \dblquote{\$(PROJ\_DIR)} são referentes
 aos arquivos de projeto produzidos ao longo deste trabalho, enquanto os arquivos
-com caminho iniciado com \dblquote{\$(SDK\_DIR)} são arquivos do Software
+com caminho iniciado com \dblquote{\$(SDK\_ROOT)} são arquivos do Software
 Development Kit oferecido pelo fabricante, e \dblquote{\$(PROJ\_DIR)} e
-\dblquote{\$(SDK\_DIR)} são variáveis definidas no início do arquivo indicando a
-localização da pasta de projeto e da pasta do SDK.
+\dblquote{\$(SDK\_ROOT)} são variáveis definidas no início do arquivo indicando
+a localização da pasta de projeto e da pasta do SDK.
 
-Para a inicialização do projeto é disponibilizado no próprio SDK, na pasta de
-exemplos, um template de projeto que contém o Makefile adequado bem como o
-arquivo \dblquote{main.c}, sendo o primeiro passo customizar as bibliotecas
-utilizadas que devem ser compiladas, bem como as informações de projeto
-presentes no Makefile, como ajustes de nomes de pastas e de flags de compilação
-quando aplicável. Este Makefile já vem com algumas opções prontas. São elas:
+Para a inicialização do projeto foi utilizado o template para projetos, na pasta
+de exemplos do SDK, contendo o Makefile adequado bem como o arquivo
+\dblquote{main.c}, sendo o primeiro passo customizar as bibliotecas utilizadas
+que devem ser compiladas, bem como as informações de projeto presentes no
+Makefile, como ajustes de nomes de pastas e de flags de compilação quando
+aplicável. Este Makefile já vem com algumas opções prontas. São elas:
 
 \begin{itemize}
   \item \textbf{make default} ou \textbf{make}: compila o programa
@@ -947,6 +982,18 @@ está e executar os comandos oferecidos.
 Em computadores com sistema operacional Windows, é necessária a instalação de
 algum software Make, como o \dblquote{GNU Make for Windows}, bem como a adição
 do programa às variáveis de ambiente do sistema.
+
+Já as configurações de compilação podem ser alteradas quando necessário.
+Eventualmente pode existir a necessidade de modificar configurações de
+otimização de compilação, ou adicionar flags que são esperadas no código fonte.
+O código fonte \ref{lst:make_flags} mostra a seção de configurações de
+compilação
+
+\begin{minipage}{0.95\linewidth}
+\lstinputlisting[firstline=115,lastline=133,label={lst:make_flags},
+caption={Flags de compilação comuns a todos os arquivos}]
+{../Development/ble-sensor-station/Makefile}
+\end{minipage}
 
 É importante ressaltar que este SDK não oferece as bibliotecas de
 baixo nível para a operação do rádio e do bluetooth. Para a utilização do bluetooth, o
@@ -1238,8 +1285,6 @@ caption={Inicialização do BLE Manager}]
 {../Development/ble-sensor-station/src/libs/ble/ble_manager.c}
 \end{minipage}
 
-
-
 Além disso, este componente faz inicializa e faz a interface
 com o SoftDevice, fazendo dele o responsável por receber os eventos relacionados
 a operação do bluetooth como a conexão e interação com serviços.
@@ -1269,11 +1314,6 @@ software}] {../Development/ble-sensor-station/src/libs/ble/ble_manager.c}
 
 %End of Sensor Station
 
-\subsubsection{Gateway Bluetooth - Internet}
-PENDING
-% 			-> Hardware
-% 			-> Ambiente de desenvolvimento
-%end of BLE-Internet gateway
 
 \subsubsection{Infraestrutura online}
 
@@ -1282,7 +1322,8 @@ AWS IoT Core, que é disponibilizada após o cadastro na plataforma.
 
 As principais tarefas de desenvolvimento nessa interface são: a criação de um
 dispositivo, a criação dos certificados de segurança e a criação de políticas de
-acesso.
+acesso. A interface de comunicação com o dispositivo através do protocolo MQTT
+já está integrada a solução e não há necessidade de configuração.
 
 Na figura \ref{fig:aws_creating_thing} é mostrada a interface utilizada para a
 criação de um dispositivo. Ao criá-lo, é possível escolher opções como nome
@@ -1312,5 +1353,105 @@ certificado.
 	\label{fig:aws_cert_dl}
 \end{center} 
 
+Após a criação de um certificado, é necessário associá-lo a uma política de
+segurança que define quais serão as funcionalidades e recursos disponíveis aos
+dispositivos que utilizarem os certificados associados a esta política. É
+possível limitar acesso a conexão, ao envio de mensagens, à recepção de
+mensagens, entre outros recursos. 
 
+A figura \ref{fig:aws_pol_createdl} mostra a página de criação da
+política. O campo \dblquote{Action} define quais são as ações nas quais a
+política criada se aplica. Preenchendo este campo com o valor \dblquote{iot:*}
+todas as ações possíveis são selecionadas.
+
+ No campo \dblquote{Resource ARN}, ou Amazon Resource Numer (ARN), é preenchido
+ com o endereço dos recursos em que a política será aplicada, podendo ser este
+ recurso um dispositivo criado na plataforma. Ao preencher o campo com o valor
+ \dblquote{*} selecionam-se todos os recursos disponíveis. O campo
+ \dblquote{Effect} foi marcado com Allow, que autoriza o acesso.
+  
+\begin{center}
+	\centering 
+	\includegraphics[width=\linewidth]{aws-policy-created.png}
+	\captionof{figure}{Criação da política de segurança}
+	\label{fig:aws_pol_createdl}
+\end{center} 
+
+Em suma, esta política permite que os dispositivos que possuam os certificados
+de segurança associados a elas tenham acesso total a qualquer recurso e ação
+oferecidos pela plataforma.
+
+Com o dispositivo criado e associado a um certificado de segurança e este
+certificado associado a uma política de segurança, o sistema está pronto para
+operar.
+
+\subsubsection{Gateway Bluetooth - Internet}
+
+\subsubsubsection{Ambiente de desenvolvimento}
+
+O ambiente de desenvolvimento utilizado para o ESP32 é muito similar ao
+utilizado para o nRF51822, sendo baseado também em ferramentas gratuitas sem
+limitações de tamanho.
+
+Neste projeto a toolchain utilizada é a Xtensa GCC
+
+O framework de trabalho utilizado é o ESP-IDF(Espressif IoT Development
+Framework). Assim como no caso do nRF51822, o ESP-IDF oferece os elementos
+básicos de software para a operação dos recursos oferecidos pelo
+microcontrolador. Elaborado com o foco de aplicações de IoT, além do software
+necessário para operar os recursos do chip, são oferecidas bibliotecas que já
+utilizam estes recursos para aplicações na internet, a exemplo do Amazon FREE
+RTOS, ou Amazon Free Real Time Operational System, um sistema operacional para
+microcontroladores gratuito oferecido pela Amazon customizado para realizar uma
+conexão fácil e segura aos servidores e serviços da Amazon AWS.
+
+No framework há também um Makefile unificado responsável pelo sistema de
+compilação do programa, denominado Espressif IDF build system, que disponibiliza
+uma série de opções de comandos make, como mostra a figura
+\ref{fig:idf_make_targets}.
+
+\begin{center}
+	\centering 
+	\includegraphics[width=\linewidth]{esp-idf-make.png}
+	\captionof{figure}{Opções oferecidas para o Makefile do ESP-IDF}
+	\label{fig:idf_make_targets}
+\end{center}
+
+
+
+
+
+, além dos códigos fonte para a utilização dos
+recursos oferecidos pelo SoC e exemplos de utilização, as ferramentas de
+compilação baseadas na toolchai Xtensa GCC e um Makefile que pode ser utilizado
+para qualquer projeto.
+
+As ferramentas de compilação para o ESP32 utilizadas são da toolchain
+Xtensa-GCC, que possui o compilador GCC para os processadores Xtensa,
+combinadas com o Make.
+
+
+
+
+Assim como para a estação de medidas, o ambiente de desenvolvimento para o
+microcontrolador ESP32 é baseado em ferramentas gratuitas. 
+
+
+\subsubsubsection{Bluetooth Observer}
+
+
+\subsubsubsection{Conexão com a AWS}
+
+%TODO SDK, FREE RTOS
+A Espressif Systems oferece um pacote chamado ESP-IDF (Espressif IoT
+Development Framework), que oferece todas as ferramenta oferece exemplos de utilização do Bluetooth, Wi-Fi, e
+também disponibiliza de forma gratuita o sistema operacional para sistemas embarcados Amazon FREE-RTOS,
+uma versão do FREE-RTOS customizada pela Amazon, que amplia as funcionalidades
+com bibliotecas de software que auxiliam a conexão de sistemas embarcados com
+os serviços de nuvem AWS.
+
+PENDING
+% 			-> Hardware
+% 			-> Ambiente de desenvolvimento
+%end of BLE-Internet gateway
 
