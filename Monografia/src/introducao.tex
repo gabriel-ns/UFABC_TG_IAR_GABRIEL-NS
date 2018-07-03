@@ -51,7 +51,7 @@ restantes com as frequências de 2402MHz, 2426MHz e 2480MHz, que
 é realizado nos dispositivos operando como broadcaster.\cite{ble4core}
 
 A tabela \ref{tab:adv_channel_list} mapeia os canais de rádiofrequência para os canais
-utilizados pelo BLE com suas respectivas identificações e finalidades. 
+utilizados pelo BLE com suas respectivas identificações e finalidades. 	
 
 \begin{center}
 	\centering 
@@ -60,10 +60,28 @@ utilizados pelo BLE com suas respectivas identificações e finalidades.
 	\label{tab:adv_channel_list}
 \end{center} 
  
- 
 Advertising é a ação de transmitir pacotes de dados de forma pública para todos
-os dispositivos capazes de recebê-los, com a finalidade principal de indicar a
-presença do dispositivo no local \cite{ble4core}.
+os dispositivos capazes de recebê-los nos três canais de advertising, com a
+finalidade principal de indicar a presença do dispositivo no local e é
+realizada pelos dispositivos que operam como periperal ou como broadcaster
+\cite{ble4core}. Logo após o envio de um pacote de advertising em um  canal, o
+broadcaster fica apto a receber uma mensagem por um instante, e quando um
+peripheral ou central recebem um advertising, podem ser solicitadas mais
+informações nesse mesmo instante através da transmissão de um pacote de Scanner
+Request que é enviado, e quando o broadcaster recebe esta solicitação um pacote
+chamado Scan Response é enviado.
+
+Durante este instante em que o broadcaster pode receber uma solicitação, é
+possível também que uma central faça uma solicitação de início de conexão,
+portanto, uma conexão só pode ser iniciada no envio de um pacote de advertising. 
+
+Os pacotes de advertising podem
+ser conectáveis ou não conectáveis.
+Quando um observer ou uma central detectam um pacote de advertising é possível solicitar mais informações do
+dispositivo através do Scanner Request, 
+
+ transmitir um comando sem a
+necessidade de estabelecer uma conexão
 
 % Os canais de Advertising possuem, frequências estratégicas para evitar
 % interferências causadas pela coexistência do BLE com redes Wi-Fi, como 
