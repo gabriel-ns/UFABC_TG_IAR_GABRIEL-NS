@@ -1,8 +1,23 @@
 \section{Resumo}
 % Revisão sobre o funcionamento do BLE
 
-% Proposta de metodologia para projeto com soluções BLE
+Este trabalho estuda as características principais do Bluetooth Low Energy da
+perspectiva do desenvolvimento de aplicações, propondo uma metodologia para a
+elaboração de projetos com Bluetooth Low Energy e realizando um projeto de
+exemplo seguindo a metodologia proposta. 
 
-% Preparação de ambiente de desenvolvimento gratuito para ARM e ESP
+O projeto desenvolvido é de uma estação de monitoramento de variáveis ambientais
+com medidas de temperatura, umidade relativa do ar, pressão atmosférica e
+luminosidade que transmite as medidas de forma sem fio através do Bluetooth Low
+Energy, sendo as medidas transmitidas captadas por outro dispositivo que envia
+as medidas para a internet. Esta implementação foi feita utilizando o 
+microcontrolador nRF51822 da Nordic Semiconductor para a leitura das variáveis,
+o microcontrolador Espressif ESP32 para receber as medidas via bluetooth e
+enviar para a internet, e o sistema da Amazon AWS IoT Core para receber estes
+dados na internet através  do protocolo MQTT. 
 
-% Implementação de projeto no âmbito da internet das coisas
+É montado e mostrado também o setup de um ambiente de desenvolvimento gratuito
+e sem limitações de tamanho de programa ou de códigos fonte para os dois
+microcontroladores.
+
+%conclusão
