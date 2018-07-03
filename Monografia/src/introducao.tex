@@ -17,15 +17,41 @@ formas de operação. \cite{ble4core}.
 
 % O que o BLE faz para ser Low Power
 
+Um dispositivo BLE pode operar de 4 formas diferentes: Broadcaster, Observer,
+Slave e Central. \cite{ble4core}.
+
+Como Broadcaster, o dispositivo opera somente como transmissor de dados,
+enviando pacotes de dados periodicamente, ação denominada Advertising, que
+podem conter informações sobre o dispositivo e indicam a presença de um 
+dispositivo num dado local. Quando um dispositivo opera apenas como
+broadcaster, ele não está aberto a receber conexões.\cite{ble4core}.
+
+Como Observer, o dispositivo opera somente como um receptor de dados, recebendo
+apenas os pacotes de advertising enviados por outros dispositivos
+BLE.\cite{ble4core}.
+
+Como Peripheral, o dispositivo suporta estabelecer uma conexão como slave. Para
+outro dispositivo detectar sua presença e iniciar uma conexão, é necessário que
+o peripheral opere antes como um broadcaster, indicando sua
+presença.\cite{ble4core}.
+
+Como Central, o dispositivo suporta múltiplas conexões como master e é sempre o
+responsável por iniciar as conexões com um peripheral. Para detectar um
+peripheral, é necessário que a central opere como um observer para detectar a
+presença de outros dispositivos.\cite{ble4core}. Um dispositivo é capaz de
+suportar múltiplas formas de operação ao mesmo tempo.\cite{ble4core}.
+
 % Descrição do meio físico
 O BLE opera na frequência de 2.4GHz utilizando 40 canais de 2MHz com
 frequências de centro de 2402MHz a 2480MHz. Existem dois tipos de transmissão: a
 transmissão de dados, que é feita em 37 dos canais disponíveis com a capacidade
-de transmissão de 1Mbit/s; e o Advertising, que é feito nos outros 3 canais
-restantes com as frequências de 2402MHz, 2426MHz e 2480MHz.\cite{ble4core}
+de transmissão de 1Mbit/s, que é realizada pelos dispositivos operando como
+central ou como peripeheral; e o Advertising, que é feito nos outros 3 canais
+restantes com as frequências de 2402MHz, 2426MHz e 2480MHz, que
+é realizado nos dispositivos operando como broadcaster.\cite{ble4core}
 
 A tabela \ref{tab:adv_channel_list} mapeia os canais de rádiofrequência para os canais
-utilizados pelo BLE com suas respectivas identificações e finalidades.
+utilizados pelo BLE com suas respectivas identificações e finalidades. 
 
 \begin{center}
 	\centering 
@@ -33,6 +59,7 @@ utilizados pelo BLE com suas respectivas identificações e finalidades.
 	\captionof{table}{Mapeamento dos canais de RF para os canais do BLE \cite{ble4core}}
 	\label{tab:adv_channel_list}
 \end{center} 
+ 
  
 Advertising é a ação de transmitir pacotes de dados de forma pública para todos
 os dispositivos capazes de recebê-los, com a finalidade principal de indicar a
