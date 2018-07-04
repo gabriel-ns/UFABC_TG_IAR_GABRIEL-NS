@@ -48,7 +48,7 @@ Este método foi escolhido visando o mínimo consumo de energia por dispensar um
 conexão para a transmissão dos dados.
  
 Como diferencial a estação permite a configuração de sua operação através de
-serviços GATT do BLE, sendo possível alterar tanto as configurações de rádio
+serviços BLE, sendo possível alterar tanto as configurações de rádio
 (potêcia e intervalo de transmissão) quanto os parâmetros de configuração dos
 sensores (range, escala, intervalo entre medidas). Além disso, os serviços dos
 sensores permitem o streaming das novas leituras.
@@ -943,7 +943,8 @@ Há também outras opções de ambientes de desenvolvimento para esta plataforma
 Além deste ambiente descrito, é possível utilizar outras ferramentas que tem o
 mesmo papel. O próprio SDK oferecido disponibiliza seus exemplos também para os
 ambientes integrados de desenvolvimento Keil, $\mu$Vision e IAR Embedded
-Workbench. 
+Workbench. Como opções de framework, também há disponível para utilização o ARM
+MBED.
 
 Para cada arquivo de código fonte criado no projeto é necessária a adição do
 mesno ao Makefile manualmente, como mostra o código fonte
@@ -1393,17 +1394,16 @@ O ambiente de desenvolvimento utilizado para o ESP32 é muito similar ao
 utilizado para o nRF51822, sendo baseado também em ferramentas gratuitas sem
 limitações de tamanho.
 
-Neste projeto a toolchain utilizada é a Xtensa GCC
-
-O framework de trabalho utilizado é o ESP-IDF(Espressif IoT Development
-Framework). Assim como no caso do nRF51822, o ESP-IDF oferece os elementos
-básicos de software para a operação dos recursos oferecidos pelo
-microcontrolador. Elaborado com o foco de aplicações de IoT, além do software
-necessário para operar os recursos do chip, são oferecidas bibliotecas que já
-utilizam estes recursos para aplicações na internet, a exemplo do Amazon FREE
-RTOS, ou Amazon Free Real Time Operational System, um sistema operacional para
-microcontroladores gratuito oferecido pela Amazon customizado para realizar uma
-conexão fácil e segura aos servidores e serviços da Amazon AWS.
+Neste projeto a toolchain utilizada é a Xtensa GCC em conjunto com o framework
+ESP-IDF(Espressif IoT Development Framework). Assim como no caso do nRF51822, o
+ESP-IDF oferece os elementos básicos de software para a operação dos recursos
+oferecidos pelo microcontrolador. Elaborado com o foco de aplicações de IoT,
+além do software necessário para operar os recursos do chip, são oferecidas
+bibliotecas que já utilizam estes recursos para aplicações na internet, a
+exemplo do Amazon FREE RTOS, ou Amazon Free Real Time Operational System, um
+sistema operacional para microcontroladores gratuito oferecido pela Amazon
+customizado para realizar uma conexão fácil e segura aos servidores e serviços
+da Amazon AWS.
 
 No framework há também um Makefile unificado responsável pelo sistema de
 compilação do programa, denominado Espressif IDF build system, que disponibiliza
@@ -1417,41 +1417,96 @@ uma série de opções de comandos make, como mostra a figura
 	\label{fig:idf_make_targets}
 \end{center}
 
+Já para a edição dos códigos fonte, manteve-se o uso do sofware Eclipse,
+padronizando a edição em um único software.
 
+O microcontrolador oferece uma interface USB Serial para a gravação via conexão
+USB, sendo necessário utilizar uma ferramenta chamada esptool desenvolvida em
+python, que pode ser instalada através do comando \dblquote{pip install esptool}
+na linha de comando. Com esta ferramenta, é possível escrever,ler e apagar a
+memória flash do microcontrolador.
 
-
-
-, além dos códigos fonte para a utilização dos
-recursos oferecidos pelo SoC e exemplos de utilização, as ferramentas de
-compilação baseadas na toolchai Xtensa GCC e um Makefile que pode ser utilizado
-para qualquer projeto.
-
-As ferramentas de compilação para o ESP32 utilizadas são da toolchain
-Xtensa-GCC, que possui o compilador GCC para os processadores Xtensa,
-combinadas com o Make.
-
-
-
-
-Assim como para a estação de medidas, o ambiente de desenvolvimento para o
-microcontrolador ESP32 é baseado em ferramentas gratuitas. 
-
+Para este microcontrolador, utilizou-se como base o exemplo de envio de dados
+via MQTT, com todas as alterações necessárias para a operação do bluetooth
+observer.
 
 \subsubsubsection{Bluetooth Observer}
 
+A operação como bluetooth observer consiste em manter o scanner BLE ligado o
+tempo todo. Ao detectar um pacote de advertising, é gerado um evento que deve
+ser tratado ou ignorado pelo software.
 
-\subsubsubsection{Conexão com a AWS}
+A biblioteca de operação do BLE para o ESP32 oferece uma lista de eventos
+possíveis, e os eventos que devem ser tratados neste projeto são:
 
-%TODO SDK, FREE RTOS
-A Espressif Systems oferece um pacote chamado ESP-IDF (Espressif IoT
-Development Framework), que oferece todas as ferramenta oferece exemplos de utilização do Bluetooth, Wi-Fi, e
-também disponibiliza de forma gratuita o sistema operacional para sistemas embarcados Amazon FREE-RTOS,
-uma versão do FREE-RTOS customizada pela Amazon, que amplia as funcionalidades
-com bibliotecas de software que auxiliam a conexão de sistemas embarcados com
-os serviços de nuvem AWS.
+\begin{itemize}[noitemsep]
+  \item ESP\_GAP\_BLE\_SCAN\_PARAM\_SET\_COMPLETE\_EVT: ocorre quando a
+  configuração do BLE observer é concluída
+  \item ESP\_GAP\_BLE\_SCAN\_RESULT\_EVT: ocorre quando um advertising é obtido
+\end{itemize}
 
-PENDING
-% 			-> Hardware
-% 			-> Ambiente de desenvolvimento
+O tratamento dos eventos é mostrado no código fonte \ref{lst:esp_evt_cb}. 
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=351,lastline=376,label={lst:esp_evt_cb},
+caption={Tratamento dos eventos do bluetooth no ESP32}] 
+{../Development/esp32-aws-ble-gateway/main/ble-wifi-aws-mqtt.c}
+\end{minipage}
+
+Quando o evento \dblquote{ESP\_GAP\_BLE\_SCAN\_PARAM\_SET\_COMPLETE\_EVT} ocorre
+e a configuração está concluída, é dado o comando para começar o scan, através da
+função \dblquote{esp\_ble\_gap\_start\_scanning} que recebe como argumento a
+duração do scan. Ao receber o valor 0, o scan fica ativo até o recebimento de um
+outro comando que o desative.
+
+Já no evento \dblquote{ESP\_GAP\_BLE\_SCAN\_RESULT\_EVT}, há uma lista de
+eventos de scan possíveis que estão relacionadas ao tipo de dispositivo e a
+leitura da lista de serviços de um dispositivo conectado. No código fonte
+\ref{lst:esp_evt_cb} tratam-se só os eventos de advertising. O pacote recebido é
+testado no filtro de Manufacturer Specific Data, que compara os bytes do
+advertising com o modelo de pacote de dados referente à Nordic Semiconductor,
+como mostra o código fonte \ref{lst:msd_filter}
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=324,lastline=335,label={lst:msd_filter},
+caption={Filtragem dos pacotes de advertising}] 
+{../Development/esp32-aws-ble-gateway/main/ble-wifi-aws-mqtt.c}
+\end{minipage}
+
+A decodificação dos pacotes é feita pela função
+\dblquote{scan\_parse\_sensor\_data}, mostrada no código fonte
+\ref{lst:packet_decoder} e armazenados na mesma estrutura de dados do código
+fonte \ref{lst:struct_adv}. Após a decodificação, os pacotes são enviados para
+as funções relacionadas a interface com a Amazon AWS. Quando um pacote é
+rejeitado pelo filtro, nada acontece.
+
+A decodificação é feita através de uma cópia dos valores do pacote para uma
+estrutura de dados, pois a estrutura de dados que forma o pacote é compartilhada
+entre o ESP32 e o nRF51822, facilitando assim o processo de decodificação das
+mensagens.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=315,lastline=322,label={lst:packet_decoder},
+caption={Decodificação dos pacotes}] 
+{../Development/esp32-aws-ble-gateway/main/ble-wifi-aws-mqtt.c}
+\end{minipage}
+
+\subsubsubsection{Envio de pacotes para a AWS}
+
+O código do exemplo de envio de dados para a AWS já oferece uma implementação do
+processo de conexão segura com a Amazon. Com a conexão entregue, foi necessária
+a implementação das funcionalidades de envios de dados.
+
+O código fonte \ref{lst:esp_evt_cb} mostra a função
+\dblquote{publish\_sensor\_data} sendo chamada. Esta função é a responsável por
+enviar o pacote no formato JSON via MQTT para o tópico correto. O código fonte
+\ref{lst:publishing} mostra esta implementação.
+
+\begin{minipage}{0.95\linewidth} 
+\lstinputlisting[firstline=283,lastline=313,label={lst:publishing},
+caption={Publicação dos dados na AWS via MQTT}] 
+{../Development/esp32-aws-ble-gateway/main/ble-wifi-aws-mqtt.c}
+\end{minipage}
+
 %end of BLE-Internet gateway
 
