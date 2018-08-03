@@ -5,44 +5,44 @@ Bluetooth é uma tecnologia de comunicação sem fio de curto alcance desenvolvi
 pelo BLuetooth Special Interest Group, também conhecido como Bluetooth SIG. Esta
 tecnologia está presente em uma vasta gama de dispositivos, sendo utilizada em
 smartphones, computadores, automóveis, tablets entre
-outros\cite{gomez2012overview}.
+outros.\cite{gomez2012overview}
 
 O Bluetooth Low Energy, ou BLE, é uma das formas de operação previstas na
 especificação da versão 4.0 do Bluetooth. Junto com o BLE, o documento também
 especifica a operação do tipo Basic Rate, também chamado de BR, dando
 continuidade as formas de operação definidas nas versões anteriores do
-bluetooth.\cite{ble4core}.
+bluetooth.\cite{ble4core}
 Um dispositivo bluetooth pode operar na forma Single Mode, sendo compatível
 apenas com BLE, ou na forma Dual Mode, sendo compatível com as duas
-formas de operação. \cite{ble4core}.
+formas de operação. \cite{ble4core}
 
 % O que o BLE faz para ser Low Power
 
 \subsection{Formas de operação} %GAP
 As formas de operação do BLE são definidas pelo General Access Profile,
 abreviado como GAP, e este perfil determina que um dispositivo possui 4 formas
-de operação: Broadcaster, Observer, Slave e Central. \cite{ble4core}.
+de operação: Broadcaster, Observer, Slave e Central. \cite{ble4core}
 
 Como Broadcaster, o dispositivo opera somente como transmissor de dados,
 enviando pacotes de dados periodicamente, ação denominada Advertising, que
 podem conter informações sobre o dispositivo e indicam a presença de um 
 dispositivo num dado local. Quando um dispositivo opera apenas como
-broadcaster, ele não está aberto a receber conexões.\cite{ble4core}.
+broadcaster, ele não está aberto a receber conexões.\cite{ble4core}
 
 Como Observer, o dispositivo opera somente como um receptor de dados, recebendo
 apenas os pacotes de advertising enviados por outros dispositivos
-BLE.\cite{ble4core}.
+BLE.\cite{ble4core}
 
 Como Peripheral, o dispositivo suporta estabelecer uma conexão como slave. Para
 outro dispositivo detectar sua presença e iniciar uma conexão, é necessário que
 o peripheral opere antes como um broadcaster, indicando sua
-presença.\cite{ble4core}.
+presença.\cite{ble4core}
 
 Como Central, o dispositivo suporta múltiplas conexões como master e é sempre o
 responsável por iniciar as conexões com um peripheral. Para detectar um
 peripheral, é necessário que a central opere como um observer para detectar a
 presença de outros dispositivos.\cite{ble4core}. Um dispositivo é capaz de
-suportar múltiplas formas de operação ao mesmo tempo.\cite{ble4core}.
+suportar múltiplas formas de operação ao mesmo tempo.\cite{ble4core}
 
 \subsection{Meio físico}
 % Descrição do meio físico
